@@ -1,9 +1,17 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router'
+import RootLayout from './RootLayout.vue'
 </script>
 
 <template>
-  <RouterView />
+  <RootLayout />
 </template>
 
-<style scoped></style>
+<style>
+body {
+  @apply bg-surface h-dvh;
+}
+
+#app {
+  @apply h-full;
+}
+</style>
