@@ -8,6 +8,7 @@ interface Props {
   name: string;
   placeholder?: string;
   disabled?: boolean;
+  rows?: number; // only for textarea
 }
 
 const props = defineProps<Props>();
@@ -20,8 +21,17 @@ const currentType = ref(props.type);
     <label :for="toCamelCase(name)" class="font-bold">{{ name }}</label>
     <div
       class="border border-neutral-400 rounded-[12px] py-2 px-3 relative"
-      :class="{ 'bg-neutral-400 cursor-not-allowed': !!disabled }"
+      :class="{ 'bg-neutral-300 cursor-not-allowed': !!disabled }"
     >
+      <textarea
+        :id="toCamelCase(name)"
+        :placeholder="placeholder"
+        v-model="model"
+        class="w-full outline-none"
+        :disabled="!!disabled"
+        :rows="rows ?? 5"
+        v-if="type === 'textarea'"
+      />
       <input
         :type="currentType"
         :id="toCamelCase(name)"
@@ -30,6 +40,7 @@ const currentType = ref(props.type);
         v-model="model"
         class="w-full outline-none"
         :disabled="!!disabled"
+        v-if="type !== 'textarea'"
       />
       <div
         @click="currentType = currentType === 'password' ? 'text' : 'password'"

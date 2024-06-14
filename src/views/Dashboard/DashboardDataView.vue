@@ -27,7 +27,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
       <TopSimulatedEnvironments />
     </div>
     <div class="flex w-[45%]">
-      <PreviewPublicProfile v-bind="publicProfile" />
+      <PreviewPublicProfile v-bind="publicProfile" :editing="false" />
     </div>
   </div>
 </template>

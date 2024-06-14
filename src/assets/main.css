@@ -9,3 +9,8 @@
 .btn-primary {
   @apply btn bg-primary text-white font-semibold;
 }
+
+input:disabled {
+  background-color: inherit;
+  cursor: not-allowed;
+}
