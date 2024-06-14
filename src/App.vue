@@ -9,44 +9,42 @@ const isLoginOrRegister = () => {
 </script>
 
 <template>
-  <div class="h-full py-4 px-4 flex gap-4">
-    <!-- hide nav if is at login or register page -->
-    <nav class="bg-white shadow-common rounded-[20px] pt-6 min-w-52" v-if="!isLoginOrRegister()">
-      <div class="flex justify-end px-4">
-        <Icon icon="mdi:arrow-collapse-left" class="text-neutral-400 text-2xl" />
-      </div>
-      <RouterLink to="/" class="nav-link">
-        <Icon icon="mdi:home" />
-        Dashboard
-      </RouterLink>
-      <RouterLink to="/products" class="nav-link">
-        <Icon icon="mdi:tag" />
-        Products
-      </RouterLink>
-      <RouterLink to="/agents" class="nav-link">
-        <Icon icon="eos-icons:ai-healing" />
-        Agents
-      </RouterLink>
-      <RouterLink to="/environments" class="nav-link">
-        <Icon icon="ri:building-fill" />
-        Environments
-      </RouterLink>
-      <RouterLink to="/simulations" class="nav-link">
-        <Icon icon="solar:graph-bold" />
-        Simulations
-      </RouterLink>
-    </nav>
-    <div class="w-full">
-      <header
-        class="text-primary bg-white shadow-common rounded-[15px] px-6 py-4 text-2xl font-bold flex items-center gap-2"
-      >
-        <Icon icon="mdi:compass-outline" class="text-3xl" />
-        <h1>MarCom</h1>
-      </header>
-      <main>
-        <RouterView />
-      </main>
+  <!-- hide nav if is at login or register page -->
+  <nav class="bg-white shadow-common rounded-[20px] pt-6 min-w-52" v-if="!isLoginOrRegister()">
+    <div class="flex justify-end px-4">
+      <Icon icon="mdi:arrow-collapse-left" class="text-neutral-400 text-2xl" />
     </div>
+    <RouterLink to="/" class="nav-link">
+      <Icon icon="mdi:home" />
+      Dashboard
+    </RouterLink>
+    <RouterLink to="/products" class="nav-link">
+      <Icon icon="mdi:tag" />
+      Products
+    </RouterLink>
+    <RouterLink to="/agents" class="nav-link">
+      <Icon icon="eos-icons:ai-healing" />
+      Agents
+    </RouterLink>
+    <RouterLink to="/environments" class="nav-link">
+      <Icon icon="ri:building-fill" />
+      Environments
+    </RouterLink>
+    <RouterLink to="/simulations" class="nav-link">
+      <Icon icon="solar:graph-bold" />
+      Simulations
+    </RouterLink>
+  </nav>
+  <div class="w-full flex flex-col">
+    <header
+      class="text-primary bg-white shadow-common rounded-[15px] px-6 py-4 text-2xl font-bold flex items-center gap-2"
+    >
+      <Icon icon="mdi:compass-outline" class="text-3xl" />
+      <h1>MarCom</h1>
+    </header>
+    <main class="h-full">
+      <RouterView />
+    </main>
   </div>
 </template>
 
@@ -56,13 +54,7 @@ body {
 }
 
 #app {
-  @apply h-full;
-}
-
-.nav-expanded {
-}
-
-.nav-retracted {
+  @apply h-full py-4 px-4 flex gap-4 relative;
 }
 
 .nav-link {
