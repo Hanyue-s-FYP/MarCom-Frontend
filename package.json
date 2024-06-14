@@ -14,9 +14,12 @@
   },
   "dependencies": {
     "@vueuse/core": "^10.11.0",
+    "apexcharts": "^3.49.1",
     "pinia": "^2.1.7",
     "vue": "^3.4.21",
-    "vue-router": "^4.3.0"
+    "vue-router": "^4.3.0",
+    "vue3-apexcharts": "^1.5.3",
+    "vue3-easy-data-table": "^1.5.47"
   },
   "devDependencies": {
     "@iconify/vue": "^4.1.2",
