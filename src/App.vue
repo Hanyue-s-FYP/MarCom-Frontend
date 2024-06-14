@@ -35,7 +35,7 @@ const isLoginOrRegister = () => {
       Simulations
     </RouterLink>
   </nav>
-  <div class="w-full flex flex-col">
+  <div class="w-full flex flex-col gap-4 h-full max-h-full overflow-auto">
     <header
       class="text-primary bg-white shadow-common rounded-[15px] px-6 py-4 text-2xl font-bold flex items-center gap-2"
     >
