@@ -2,12 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-.btn {
-  @apply py-3 rounded-[15px];
-}
+@layer components {
+  .btn {
+    @apply py-3 rounded-[15px];
+  }
 
-.btn-primary {
-  @apply btn bg-primary text-white font-semibold;
+  .btn-primary {
+    @apply btn bg-primary text-white font-semibold;
+  }
 }
 
 input:disabled {

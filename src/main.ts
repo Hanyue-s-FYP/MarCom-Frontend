@@ -1,4 +1,6 @@
 import "./assets/main.css";
+import "ag-grid-community/styles/ag-grid.css"; // Mandatory CSS required by the grid
+import "ag-grid-community/styles/ag-theme-quartz.css";
 
 import { createApp } from "vue";
 import { createPinia } from "pinia";
