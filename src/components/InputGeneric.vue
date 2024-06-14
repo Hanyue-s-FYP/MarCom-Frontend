@@ -7,6 +7,7 @@ interface Props {
   type: string;
   name: string;
   placeholder?: string;
+  disabled?: boolean;
 }
 
 const props = defineProps<Props>();
@@ -17,7 +18,10 @@ const currentType = ref(props.type);
 <template>
   <div class="flex flex-col w-full">
     <label :for="toCamelCase(name)" class="font-bold">{{ name }}</label>
-    <div class="border border-neutral-400 rounded-[12px] py-2 px-3 relative">
+    <div
+      class="border border-neutral-400 rounded-[12px] py-2 px-3 relative"
+      :class="{ 'bg-neutral-400 cursor-not-allowed': !!disabled }"
+    >
       <input
         :type="currentType"
         :id="toCamelCase(name)"
@@ -25,6 +29,7 @@ const currentType = ref(props.type);
         :placeholder="placeholder"
         v-model="model"
         class="w-full outline-none"
+        :disabled="!!disabled"
       />
       <div
         @click="currentType = currentType === 'password' ? 'text' : 'password'"

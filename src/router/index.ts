@@ -6,27 +6,39 @@ const router = createRouter({
     {
       path: "/",
       name: "dashboard",
-      component: () => import("@/views/DashboardView.vue"),
+      component: () => import("@/views/Dashboard/DashboardView.vue"),
+      children: [
+        {
+          path: "",
+          name: "dashboard-data",
+          component: () => import("@/views/Dashboard/DashboardDataView.vue"),
+        },
+        {
+          path: "edit-business-profile",
+          name: "edit-business-profile",
+          component: () => import("@/views/Dashboard/EditBusinessProfileView.vue"),
+        },
+      ],
     },
     {
       path: "/products",
       name: "products",
-      component: () => import("@/views/DashboardView.vue"),
+      component: () => import("@/views/Dashboard/DashboardView.vue"),
     },
     {
       path: "/agents",
       name: "agents",
-      component: () => import("@/views/DashboardView.vue"),
+      component: () => import("@/views/Dashboard/DashboardView.vue"),
     },
     {
       path: "/environments",
       name: "environments",
-      component: () => import("@/views/DashboardView.vue"),
+      component: () => import("@/views/Dashboard/DashboardView.vue"),
     },
     {
       path: "/simulations",
       name: "simulations",
-      component: () => import("@/views/DashboardView.vue"),
+      component: () => import("@/views/Dashboard/DashboardView.vue"),
     },
     {
       path: "/login",
