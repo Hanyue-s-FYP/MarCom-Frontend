@@ -35,7 +35,7 @@ const editAgent = (data: EditAgent) => {
         @click="$router.push({ name: 'agent-detail', params: { id: route.params.id } })"
       >
         <Icon icon="mdi:arrow-left" class="text-[2rem]" />
-        <span class="text-xl font-medium">Editing Agent</span>
+        <span class="text-xl font-medium">Editing {{ agentData.name }}</span>
       </div>
     </div>
     <div class="max-w-xl pl-2">

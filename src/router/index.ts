@@ -82,22 +82,22 @@ const router = createRouter({
         {
           path: "",
           name: "environment-list",
-          component: {}, // TODO change this
+          component: () => import("@/views/Environments/EnvironmentListView.vue"),
         },
         {
           path: "new-environment",
           name: "new-environment",
-          component: {}, // TODO change this
+          component: () => import("@/views/Environments/EnvironmentNewView.vue"),
         },
         {
           path: ":id",
           name: "environment-detail",
-          component: {}, // TODO change this
+          component: () => import("@/views/Environments/EnvironmentDetailView.vue"),
         },
         {
           path: "edit-environment/:id",
           name: "edit-environment",
-          component: {}, // TODO change this
+          component: () => import("@/views/Environments/EnvironmentEditView.vue"),
         },
       ],
     },

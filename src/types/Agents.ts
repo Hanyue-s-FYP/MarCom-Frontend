@@ -8,6 +8,8 @@ export interface CreateAgent {
 
 export type EditAgent = CreateAgent & { id: number };
 
-export type GetAgent = EditAgent & { inEnvironments: SimplifiedEnvironment[] };
+export type GetAgent = EditAgent;
 
-export type AgentTableData = Omit<GetAgent, "attributes">;
+export type AgentTableData = Omit<GetAgent, "attributes"> & {
+  inEnvironments: SimplifiedEnvironment[];
+};

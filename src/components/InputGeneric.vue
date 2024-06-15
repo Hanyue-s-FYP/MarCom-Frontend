@@ -29,11 +29,13 @@ const currentType = ref(props.type);
     >
     <div
       class="border border-neutral-400 rounded-[12px] py-2 px-3 relative focus-within:border-primary focus-within:text-primary"
-      :class="{
-        'text-red-500 border-red-500': !!isInvalid,
-        'bg-neutral-300 cursor-not-allowed': !!disabled,
-        'flex gap-2': $slots.prepend,
-      }"
+      :class="[
+        !!disabled ? 'bg-neutral-300 cursor-not-allowed' : 'bg-white',
+        {
+          'text-red-500 border-red-500': !!isInvalid,
+          'flex items-center gap-2': $slots.prepend,
+        },
+      ]"
     >
       <div class="inline-block h-full" v-if="$slots.prepend">
         <slot name="prepend"></slot>

@@ -33,7 +33,7 @@ const editProduct = (data: EditProduct) => {
         @click="$router.push({ name: 'product-detail', params: { id: route.params.id } })"
       >
         <Icon icon="mdi:arrow-left" class="text-[2rem]" />
-        <span class="text-xl font-medium">Editing Product</span>
+        <span class="text-xl font-medium">Editing {{ product.name }}</span>
       </div>
     </div>
     <div class="max-w-lg pl-2">

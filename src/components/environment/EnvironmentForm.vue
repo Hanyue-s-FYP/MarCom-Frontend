@@ -1,45 +1,54 @@
 <script setup lang="ts">
 import { reactive } from "vue";
 import InputGeneric from "../InputGeneric.vue";
-import type { CreateAgent, EditAgent } from "@/types/Agents";
-import AgentAttributeInput from "./AgentAttributeInput.vue";
+import type { CreateEnvironment, EditEnvironment } from "@/types/Environments";
+import SelectProductsInput from "./SelectProductsInput.vue";
+import SelectAgentsInput from "./SelectAgentsInput.vue";
 
 const emit = defineEmits<{
   // kaki assert the type when using the form :))
-  (e: "submit", a: CreateAgent | EditAgent): void;
+  (e: "submit", env: CreateEnvironment | EditEnvironment): void;
   (e: "cancel"): void;
 }>();
 
 // if undefined assume is create product
-const props = defineProps<{ editProps?: EditAgent }>();
+const props = defineProps<{ editProps?: EditEnvironment }>();
 
-const agentData: CreateAgent | EditAgent = reactive(
+const environmentData: CreateEnvironment | EditEnvironment = reactive(
   props.editProps
     ? { ...props.editProps }
     : {
         name: "",
         description: "",
-        attributes: [],
+        products: [],
+        agents: [],
       },
 );
 
 // TODO add validations
 const submitForm = () => {
-  emit("submit", agentData);
+  emit("submit", environmentData);
 };
 </script>
 
 <template>
   <form @submit.prevent class="flex flex-col gap-4">
-    <InputGeneric name="Agent Name" type="text" v-model="agentData.name" placeholder="Agent A" />
+    <InputGeneric
+      name="Environment Name"
+      type="text"
+      v-model="environmentData.name"
+      placeholder="Agent A"
+    />
     <InputGeneric
       name="Description"
       type="textarea"
       :rows="7"
-      v-model="agentData.description"
+      v-model="environmentData.description"
       placeholder="What should the agent know about itself that cannot be grouped in a key value aspect..."
     />
-    <AgentAttributeInput v-model="agentData.attributes" />
+    <!-- sadly select product and select agents input though look similar, cannot be merged into a single component in a straightforward manner :(((( -->
+    <SelectProductsInput v-model="environmentData.products" />
+    <SelectAgentsInput v-model="environmentData.agents" />
     <div class="grid grid-cols-2 gap-2">
       <button class="btn-primary w-full" @click="submitForm">
         {{ editProps ? "Save" : "Create" }}
