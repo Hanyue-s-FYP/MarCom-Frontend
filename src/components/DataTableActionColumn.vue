@@ -12,7 +12,7 @@ const deleteData = () => {
   <div class="flex h-full w-full items-center">
     <button
       class="btn px-2 py-1 bg-red-500 text-white text-sm rounded-lg flex gap-2 items-center"
-      @click="deleteData()"
+      @click.stop="deleteData()"
     >
       <Icon icon="mdi:delete" />
       Delete

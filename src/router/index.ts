@@ -55,22 +55,22 @@ const router = createRouter({
         {
           path: "",
           name: "agent-list",
-          component: {}, // TODO change this
+          component: () => import("@/views/Agents/AgentListView.vue"),
         },
         {
           path: "new-agent",
           name: "new-agent",
-          component: {}, // TODO change this
+          component: () => import("@/views/Agents/AgentNewView.vue"),
         },
         {
           path: ":id",
           name: "agent-detail",
-          component: {}, // TODO change this
+          component: () => import("@/views/Agents/AgentDetailView.vue"),
         },
         {
-          path: "edit-agent",
+          path: "edit-agent/:id",
           name: "edit-agent",
-          component: {}, // TODO change this
+          component: () => import("@/views/Agents/AgentEditView.vue"),
         },
       ],
     },

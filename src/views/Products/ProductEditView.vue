@@ -30,10 +30,10 @@ const editProduct = (data: EditProduct) => {
     <div class="flex items-center justify-between mb-4">
       <div
         class="flex items-center gap-2 cursor-pointer hover:text-primary"
-        @click="$router.push({ name: 'product-list' })"
+        @click="$router.push({ name: 'product-detail', params: { id: route.params.id } })"
       >
         <Icon icon="mdi:arrow-left" class="text-[2rem]" />
-        <span class="text-xl font-medium">Editing Product </span>
+        <span class="text-xl font-medium">Editing Product</span>
       </div>
     </div>
     <div class="max-w-lg pl-2">

@@ -58,7 +58,7 @@ body {
 }
 
 .nav-link {
-  @apply flex gap-2 items-center pl-6 pr-4 py-2 text-neutral-400 text-lg font-semibold;
+  @apply flex gap-2 items-center pl-6 pr-4 py-2 text-neutral-400 text-lg font-semibold hover:text-primary;
 }
 
 .router-link-active {

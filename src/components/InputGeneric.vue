@@ -7,21 +7,26 @@ interface Props {
   type: string;
   name: string;
   placeholder?: string;
+  showLabel?: boolean;
   disabled?: boolean;
   isInvalid?: boolean;
   rows?: number; // only for textarea
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), { showLabel: true });
 const model = defineModel(); // vue 3.4 SAIKOOOO things aren't this easy previously
 const currentType = ref(props.type);
 </script>
 
 <template>
   <div class="flex flex-col w-full">
-    <label :for="toCamelCase(name)" class="font-bold" :class="{ 'text-red-500': !!isInvalid }">{{
-      name
-    }}</label>
+    <label
+      :for="toCamelCase(name)"
+      class="font-bold"
+      :class="{ 'text-red-500': !!isInvalid }"
+      v-if="showLabel"
+      >{{ name }}</label
+    >
     <div
       class="border border-neutral-400 rounded-[12px] py-2 px-3 relative focus-within:border-primary focus-within:text-primary"
       :class="{
