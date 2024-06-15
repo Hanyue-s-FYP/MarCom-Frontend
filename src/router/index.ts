@@ -33,17 +33,17 @@ const router = createRouter({
         {
           path: "new-product",
           name: "new-product",
-          component: {}, // TODO change this
+          component: () => import("@/views/Products/ProductNewView.vue"),
         },
         {
-          path: "product-detail",
+          path: ":id",
           name: "product-detail",
-          component: {}, // TODO change this
+          component: () => import("@/views/Products/ProductDetailView.vue"),
         },
         {
-          path: "edit-product",
+          path: "edit-product/:id",
           name: "edit-product",
-          component: {}, // TODO change this
+          component: () => import("@/views/Products/ProductEditView.vue"),
         },
       ],
     },
@@ -63,7 +63,7 @@ const router = createRouter({
           component: {}, // TODO change this
         },
         {
-          path: "agent-detail",
+          path: ":id",
           name: "agent-detail",
           component: {}, // TODO change this
         },
@@ -90,12 +90,12 @@ const router = createRouter({
           component: {}, // TODO change this
         },
         {
-          path: "environment-detail",
+          path: ":id",
           name: "environment-detail",
           component: {}, // TODO change this
         },
         {
-          path: "edit-environment",
+          path: "edit-environment/:id",
           name: "edit-environment",
           component: {}, // TODO change this
         },
@@ -117,12 +117,12 @@ const router = createRouter({
           component: {}, // TODO change this
         },
         {
-          path: "simulation-detail",
+          path: ":id",
           name: "simulation-detail",
           component: {}, // TODO change this
         },
         {
-          path: "edit-simulation",
+          path: "edit-simulation/:id",
           name: "edit-simulation",
           component: {}, // TODO change this
         },
