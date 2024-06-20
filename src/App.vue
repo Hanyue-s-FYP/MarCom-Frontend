@@ -68,6 +68,7 @@ body {
 .router-link-active::before {
   @apply bg-primary w-2 h-[55%] rounded-r-full absolute left-0;
   content: "";
+  border-radius: 9999px;
   top: 50%;
   transform: translateY(-50%);
   animation: 0.25s ease-in active-nav-link-indicator-appear forwards;
@@ -75,7 +76,6 @@ body {
 
 @keyframes active-nav-link-indicator-appear {
   from {
-    border-radius: 9999px;
     transform: translateX(100%) translateY(-50%);
     opacity: 0;
   }
