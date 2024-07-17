@@ -1,11 +1,29 @@
 <script setup lang="ts">
 import { Icon } from "@iconify/vue";
 import { RouterView, RouterLink, useRoute } from "vue-router";
+import ToastContainer from "@/components/Toast/ToastContainer.vue";
+import { useToasts } from "@/composable/toasts";
+import { onMounted } from "vue";
+import { useAuthStore } from "@/stores/auth";
+import LoaderSrc from "@/assets/loader.svg";
+import { useLoading } from "./composable/loader";
+import { callApi } from "./utils";
+
+const { toasts, removeToast } = useToasts();
+const authStore = useAuthStore();
+const { isLoading } = useLoading();
 
 const isLoginOrRegister = () => {
   const route = useRoute();
   return route.name === "login" || route.name === "register";
 };
+
+onMounted(async () => {
+  await authStore.getMe();
+  const res = await callApi("/hello", { method: "GET" });
+  const { makeToast } = useToasts();
+  makeToast(res?.Message);
+});
 </script>
 
 <template>
@@ -46,11 +64,37 @@ const isLoginOrRegister = () => {
       <RouterView />
     </main>
   </div>
+
+  <Teleport to="body">
+    <ToastContainer :toasts="toasts" :remove-toast="removeToast" />
+    <div class="loader" v-if="isLoading">
+      <img :src="LoaderSrc" alt="Loading Icon" />
+    </div>
+  </Teleport>
 </template>
 
 <style>
 body {
   @apply bg-surface h-dvh;
+}
+
+.loader {
+  @apply bg-surface/70;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loader > img {
+  width: 50%;
+  aspect-ratio: 1/1;
+  max-width: 3rem;
 }
 
 #app {
@@ -68,7 +112,6 @@ body {
 .router-link-active::before {
   @apply bg-primary w-2 h-[55%] rounded-r-full absolute left-0;
   content: "";
-  border-radius: 9999px;
   top: 50%;
   transform: translateY(-50%);
   animation: 0.25s ease-in active-nav-link-indicator-appear forwards;

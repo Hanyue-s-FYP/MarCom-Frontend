@@ -141,4 +141,9 @@ const router = createRouter({
   ],
 });
 
+// TODO do auth
+router.beforeEach((to, from, next) => {
+  next();
+});
+
 export default router;
