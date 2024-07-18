@@ -1,6 +1,6 @@
 export interface BusinessPublicProfile {
-  companyName: string;
-  businessType: string;
-  description: string;
-  coverPic?: File | string;
+  CompanyName: string;
+  BusinessType: string;
+  Description: string;
+  CoverPic?: File | string;
 }

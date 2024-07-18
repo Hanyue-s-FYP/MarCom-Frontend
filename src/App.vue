@@ -20,9 +20,6 @@ const isLoginOrRegister = () => {
 
 onMounted(async () => {
   await authStore.getMe();
-  const res = await callApi("/hello", { method: "GET" });
-  const { makeToast } = useToasts();
-  makeToast(res?.Message);
 });
 </script>
 
