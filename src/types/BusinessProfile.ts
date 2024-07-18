@@ -1,5 +1,5 @@
 export interface BusinessPublicProfile {
-  CompanyName: string;
+  DisplayName: string;
   BusinessType: string;
   Description: string;
   CoverPic?: File | string;

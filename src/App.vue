@@ -6,8 +6,7 @@ import { useToasts } from "@/composable/toasts";
 import { onMounted } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import LoaderSrc from "@/assets/loader.svg";
-import { useLoading } from "./composable/loader";
-import { callApi } from "./utils";
+import { useLoading } from "@/composable/loader";
 
 const { toasts, removeToast } = useToasts();
 const authStore = useAuthStore();

@@ -1,5 +1,6 @@
 import { callApi } from "@/utils";
 import type { GeneralResponse } from ".";
+import type { BusinessPublicProfile } from "@/types/BusinessProfile";
 
 // for now only concern with business
 export const getUserById = () => {};
@@ -18,17 +19,14 @@ export const loginUser = async (data: LoginFields): Promise<LoginResponse> => {
   });
 };
 
-export interface RegisterBusinessData {
+export type RegisterBusinessData = Omit<BusinessPublicProfile, "CoverPic"> & {
   Username: string;
   Password: string;
-  DisplayName: string;
   Email: string;
   Status: number; // for now just 1 for all first
   PhoneNumber: string;
-  Description: string;
-  BusinessType: string;
   CoverImgPath: string;
-}
+};
 
 export const registerBusiness = async (data: RegisterBusinessData): Promise<GeneralResponse> => {
   return await callApi("/register-business", {
