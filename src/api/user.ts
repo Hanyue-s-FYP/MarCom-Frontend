@@ -19,18 +19,28 @@ export const loginUser = async (data: LoginFields): Promise<LoginResponse> => {
   });
 };
 
-export type RegisterBusinessData = Omit<BusinessPublicProfile, "CoverPic"> & {
+export type User = {
   Username: string;
   Password: string;
   Email: string;
   Status: number; // for now just 1 for all first
   PhoneNumber: string;
-  CoverImgPath: string;
 };
+
+export type RegisterBusinessData = User &
+  Omit<BusinessPublicProfile, "CoverPic"> & { CoverImgPath: string };
+
+export type GetUser = Omit<User, "Password">;
 
 export const registerBusiness = async (data: RegisterBusinessData): Promise<GeneralResponse> => {
   return await callApi("/register-business", {
     method: "POST",
     data,
+  });
+};
+
+export const getMe = async (): Promise<GetUser> => {
+  return await callApi("/get-me", {
+    method: "GET",
   });
 };

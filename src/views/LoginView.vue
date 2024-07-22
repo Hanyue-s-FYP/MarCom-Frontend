@@ -19,6 +19,7 @@ const login = async () => {
   if (!res) {
     return;
   }
+  localStorage.setItem("userToken", res.Token);
   makeToast(res.Message);
   router.push("/");
 };

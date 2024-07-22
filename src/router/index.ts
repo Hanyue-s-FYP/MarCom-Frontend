@@ -1,3 +1,4 @@
+import { useAuthStore } from "@/stores/auth";
 import { createRouter, createWebHistory } from "vue-router";
 
 const router = createRouter({
@@ -132,18 +133,30 @@ const router = createRouter({
       path: "/login",
       name: "login",
       component: () => import("@/views/LoginView.vue"),
+      meta: {
+        notRequireAuth: true, // instead of adding requireAuth to every route that needs it (which will be majority of the routes), add to those who don't need it first (because will be way less)
+      },
     },
     {
       path: "/register",
       name: "register",
       component: () => import("@/views/RegisterView.vue"),
+      meta: {
+        notRequireAuth: true, // instead of adding requireAuth to every route that needs it (which will be majority of the routes), add to those who don't need it first (because will be way less)
+      },
     },
   ],
 });
 
-// TODO do auth
-router.beforeEach((to, from, next) => {
-  next();
+// do auth
+router.beforeEach(async (to) => {
+  if (!to.meta?.notRequireAuth) {
+    const auth = useAuthStore();
+    await auth.getMe(); // in case app is just restarted
+    if (!auth.isLoggedIn) {
+      return { name: "login", replace: true };
+    }
+  }
 });
 
 export default router;

@@ -9,17 +9,12 @@ import LoaderSrc from "@/assets/loader.svg";
 import { useLoading } from "@/composable/loader";
 
 const { toasts, removeToast } = useToasts();
-const authStore = useAuthStore();
 const { isLoading } = useLoading();
 
 const isLoginOrRegister = () => {
   const route = useRoute();
   return route.name === "login" || route.name === "register";
 };
-
-onMounted(async () => {
-  await authStore.getMe();
-});
 </script>
 
 <template>
