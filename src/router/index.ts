@@ -135,6 +135,7 @@ const router = createRouter({
       component: () => import("@/views/LoginView.vue"),
       meta: {
         notRequireAuth: true, // instead of adding requireAuth to every route that needs it (which will be majority of the routes), add to those who don't need it first (because will be way less)
+        noAccessWhenLoggedIn: true,
       },
     },
     {
@@ -143,6 +144,7 @@ const router = createRouter({
       component: () => import("@/views/RegisterView.vue"),
       meta: {
         notRequireAuth: true, // instead of adding requireAuth to every route that needs it (which will be majority of the routes), add to those who don't need it first (because will be way less)
+        noAccessWhenLoggedIn: true,
       },
     },
   ],
@@ -150,11 +152,17 @@ const router = createRouter({
 
 // do auth
 router.beforeEach(async (to) => {
+  const auth = useAuthStore();
+  await auth.getMe(); // in case app is just restarted
   if (!to.meta?.notRequireAuth) {
-    const auth = useAuthStore();
-    await auth.getMe(); // in case app is just restarted
     if (!auth.isLoggedIn) {
       return { name: "login", replace: true };
+    }
+  }
+  // if already logged in cannot access login and register routes
+  if (to.meta?.noAccessWhenLoggedIn) {
+    if (auth.isLoggedIn) {
+      return { name: "dashboard", replace: true };
     }
   }
 });

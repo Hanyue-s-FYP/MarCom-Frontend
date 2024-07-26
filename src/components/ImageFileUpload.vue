@@ -1,19 +1,15 @@
 <script setup lang="ts">
 import { useDropZone, useFileDialog } from "@vueuse/core";
 import { Icon } from "@iconify/vue";
-import { computed, ref } from "vue";
+import { ref } from "vue";
+import CoverPicLoader from "./dashboard/CoverPicLoader.vue";
 
 const dropZoneRef = ref<HTMLDivElement>();
 const pic = defineModel<File | string>("pic");
-const computedPic = computed(() => {
-  if (!pic.value) return;
-  if (pic.value instanceof File) return URL.createObjectURL(pic.value);
-  else return pic.value;
-});
 
 function onDrop(files: File[] | null) {
   // always only take the first pic if there are multiple
-  if (files) pic.value = files[0];
+  if (files && files.length > 0) pic.value = files[0];
 }
 
 const { isOverDropZone } = useDropZone(dropZoneRef, {
@@ -47,7 +43,7 @@ onChange((files) => {
         <Icon icon="mdi:image" class="text-[96px]" />
         Drop or Browse Cover Image
       </div>
-      <img :src="computedPic" alt="Upload preview" v-else />
+      <CoverPicLoader :url="pic" v-else />
     </div>
   </div>
 </template>

@@ -2,17 +2,38 @@
 import InputGeneric from "@/components/InputGeneric.vue";
 import ImageFileUpload from "@/components/ImageFileUpload.vue";
 import { useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
+import { updateBusiness, type UpdateBusinessData } from "@/api/user";
+import { ref } from "vue";
 
 const router = useRouter();
+const auth = useAuthStore();
 
 const companyName = defineModel("companyName");
 const businessType = defineModel("businessType");
 const description = defineModel("description");
 const coverPic = defineModel<File | string>("coverPic");
+// temporary store the cover image path as needs to be sent back to the server unchanged
+const props = defineProps<{ oriCoverPic: string }>();
 
-const saveBusinessPublicProfile = () => {
+const emits = defineEmits<{
+  (e: "updateSuccess"): void;
+}>();
+
+const saveBusinessPublicProfile = async () => {
   // TODO save to db
-  router.push({ name: "dashboard-data" });
+  let updateData: UpdateBusinessData = {
+    ID: auth.userData?.RoleID ?? 0, // not possible get 0
+    Description: (description.value as string) ?? "", // should got smtg eh
+    CoverImgPath: props.oriCoverPic ?? "", // should always be string as when fetched from server it is string
+  };
+  if (coverPic.value instanceof File) {
+    updateData = { ...updateData, NewCoverImg: coverPic.value };
+  }
+  console.log(updateData);
+  const res = await updateBusiness(updateData);
+  console.log(res);
+  emits("updateSuccess");
 };
 </script>
 

@@ -3,11 +3,11 @@ import { Icon } from "@iconify/vue";
 import { RouterView, RouterLink, useRoute } from "vue-router";
 import ToastContainer from "@/components/Toast/ToastContainer.vue";
 import { useToasts } from "@/composable/toasts";
-import { onMounted } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import LoaderSrc from "@/assets/loader.svg";
 import { useLoading } from "@/composable/loader";
 
+const auth = useAuthStore();
 const { toasts, removeToast } = useToasts();
 const { isLoading } = useLoading();
 
@@ -19,31 +19,47 @@ const isLoginOrRegister = () => {
 
 <template>
   <!-- hide nav if is at login or register page -->
-  <nav class="bg-white shadow-common rounded-[20px] pt-6 min-w-52" v-if="!isLoginOrRegister()">
-    <div class="flex justify-end px-4">
-      <Icon icon="mdi:arrow-collapse-left" class="text-neutral-400 text-2xl" />
-    </div>
-    <RouterLink to="/" class="nav-link">
-      <Icon icon="mdi:home" />
-      Dashboard
-    </RouterLink>
-    <RouterLink to="/products" class="nav-link">
-      <Icon icon="mdi:tag" />
-      Products
-    </RouterLink>
-    <RouterLink to="/agents" class="nav-link">
-      <Icon icon="eos-icons:ai-healing" />
-      Agents
-    </RouterLink>
-    <RouterLink to="/environments" class="nav-link">
-      <Icon icon="ri:building-fill" />
-      Environments
-    </RouterLink>
-    <RouterLink to="/simulations" class="nav-link">
-      <Icon icon="solar:graph-bold" />
-      Simulations
-    </RouterLink>
-  </nav>
+  <div
+    class="bg-white shadow-common pt-6 min-w-52 rounded-[20px] flex flex-col justify-between"
+    v-if="!isLoginOrRegister()"
+  >
+    <nav>
+      <div class="flex justify-end px-4">
+        <Icon icon="mdi:arrow-collapse-left" class="text-neutral-400 text-2xl" />
+      </div>
+      <RouterLink to="/" class="nav-link">
+        <Icon icon="mdi:home" />
+        Dashboard
+      </RouterLink>
+      <RouterLink to="/products" class="nav-link">
+        <Icon icon="mdi:tag" />
+        Products
+      </RouterLink>
+      <RouterLink to="/agents" class="nav-link">
+        <Icon icon="eos-icons:ai-healing" />
+        Agents
+      </RouterLink>
+      <RouterLink to="/environments" class="nav-link">
+        <Icon icon="ri:building-fill" />
+        Environments
+      </RouterLink>
+      <RouterLink to="/simulations" class="nav-link">
+        <Icon icon="solar:graph-bold" />
+        Simulations
+      </RouterLink>
+    </nav>
+    <button
+      class="btn-primary justify-self-end m-4"
+      @click="
+        () => {
+          auth.logout();
+          $router.push({ name: 'login', replace: true });
+        }
+      "
+    >
+      Log Out
+    </button>
+  </div>
   <div class="w-full flex flex-col gap-4 h-full max-h-full overflow-auto">
     <header
       class="text-primary bg-white shadow-common rounded-[15px] px-6 py-4 text-2xl font-bold flex items-center gap-2"

@@ -3,7 +3,7 @@ import { RouterLink } from "vue-router";
 import CoverPicLoader from "@/components/dashboard/CoverPicLoader.vue";
 import { type BusinessPublicProfile } from "@/types/BusinessProfile";
 
-defineProps<BusinessPublicProfile & { editing: boolean }>();
+defineProps<Partial<BusinessPublicProfile & { editing: boolean }>>();
 </script>
 
 <template>
@@ -17,9 +17,11 @@ defineProps<BusinessPublicProfile & { editing: boolean }>();
         >Edit</RouterLink
       >
     </div>
-    <CoverPicLoader :url="coverPic" />
-    <h1 class="font-bold text-xl mt-2">{{ companyName }}</h1>
-    <p class="text-sm text-neutral-400 mb-4">{{ businessType }}</p>
-    <p class="whitespace-pre-line break-words max-w-full">{{ description }}</p>
+    <CoverPicLoader :url="CoverImgPath ?? ''" />
+    <h1 class="font-bold text-xl mt-2">{{ DisplayName ?? "Fetching display name" }}</h1>
+    <p class="text-sm text-neutral-400 mb-4">{{ BusinessType ?? "Fetching business type" }}</p>
+    <p class="whitespace-pre-line break-words max-w-full">
+      {{ Description ?? "Fetching business description" }}
+    </p>
   </div>
 </template>
