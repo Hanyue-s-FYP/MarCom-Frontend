@@ -1,29 +1,38 @@
 <script setup lang="ts">
 import { Icon } from "@iconify/vue";
 import { useRoute, useRouter } from "vue-router";
-import { reactive } from "vue";
+import { type Ref, ref, onMounted } from "vue";
 import type { EditAgent } from "@/types/Agents";
 import AgentForm from "@/components/agent/AgentForm.vue";
+import { getAgent, updateAgent } from "@/api/agent";
+import { useToasts } from "@/composable/toasts";
 
 const route = useRoute();
 const router = useRouter();
+const { makeToast } = useToasts();
 
 // TODO fetch from backend based on id on mounted
-const agentData: EditAgent = reactive({
-  id: 1,
-  name: "Agent A",
-  description: "Description for Agent A",
-  attributes: [
-    { key: "attribute1", value: "value1" },
-    { key: "attribute2", value: "value2" },
-  ],
-});
+const agentData: Ref<EditAgent | undefined> = ref();
 
 // TODO save to backend
-const editAgent = (data: EditAgent) => {
+const editAgent = async (data: EditAgent) => {
   console.log(data);
-  router.push({ name: "agent-detail", params: { id: route.params.id } });
+  const res = await updateAgent(data);
+  if (res) {
+    makeToast(res.Message);
+    router.push({ name: "agent-detail", params: { id: route.params.id } });
+  }
 };
+
+onMounted(async () => {
+  const res = await getAgent(parseInt(route.params.id as string));
+  console.log(res);
+  if (!res) {
+    router.replace({ name: "agent-list" });
+    return;
+  }
+  agentData.value = res;
+});
 </script>
 
 <template>
@@ -35,7 +44,7 @@ const editAgent = (data: EditAgent) => {
         @click="$router.push({ name: 'agent-detail', params: { id: route.params.id } })"
       >
         <Icon icon="mdi:arrow-left" class="text-[2rem]" />
-        <span class="text-xl font-medium">Editing {{ agentData.name }}</span>
+        <span class="text-xl font-medium">Editing {{ agentData?.Name }}</span>
       </div>
     </div>
     <div class="max-w-xl pl-2">
@@ -44,6 +53,7 @@ const editAgent = (data: EditAgent) => {
         :edit-props="agentData"
         @submit="(data) => editAgent(data as EditAgent)"
         @cancel="router.push({ name: 'agent-detail', params: { id: route.params.id } })"
+        v-if="agentData"
       />
     </div>
   </div>

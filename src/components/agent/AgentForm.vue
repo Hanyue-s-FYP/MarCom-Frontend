@@ -3,6 +3,7 @@ import { reactive } from "vue";
 import InputGeneric from "../InputGeneric.vue";
 import type { CreateAgent, EditAgent } from "@/types/Agents";
 import AgentAttributeInput from "./AgentAttributeInput.vue";
+import { useAuthStore } from "@/stores/auth";
 
 const emit = defineEmits<{
   // kaki assert the type when using the form :))
@@ -17,9 +18,10 @@ const agentData: CreateAgent | EditAgent = reactive(
   props.editProps
     ? { ...props.editProps }
     : {
-        name: "",
-        description: "",
-        attributes: [],
+        Name: "",
+        GeneralDescription: "",
+        Attributes: [],
+        BusinessID: useAuthStore().userData?.RoleID ?? 0,
       },
 );
 
@@ -31,15 +33,15 @@ const submitForm = () => {
 
 <template>
   <form @submit.prevent class="flex flex-col gap-4">
-    <InputGeneric name="Agent Name" type="text" v-model="agentData.name" placeholder="Agent A" />
+    <InputGeneric name="Agent Name" type="text" v-model="agentData.Name" placeholder="Agent A" />
     <InputGeneric
       name="Description"
       type="textarea"
       :rows="7"
-      v-model="agentData.description"
+      v-model="agentData.GeneralDescription"
       placeholder="What should the agent know about itself that cannot be grouped in a key value aspect..."
     />
-    <AgentAttributeInput v-model="agentData.attributes" />
+    <AgentAttributeInput v-model="agentData.Attributes" />
     <div class="grid grid-cols-2 gap-2">
       <button class="btn-primary w-full" @click="submitForm">
         {{ editProps ? "Save" : "Create" }}

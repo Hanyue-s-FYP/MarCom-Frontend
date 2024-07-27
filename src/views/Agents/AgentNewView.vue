@@ -3,13 +3,20 @@ import { Icon } from "@iconify/vue";
 import AgentForm from "@/components/agent/AgentForm.vue";
 import type { CreateAgent } from "@/types/Agents";
 import { useRouter } from "vue-router";
+import { createAgent } from "@/api/agent";
+import { useToasts } from "@/composable/toasts";
 
 const router = useRouter();
+const { makeToast } = useToasts();
 
 // TODO save to backend
-const createNewAgent = (data: CreateAgent) => {
+const createNewAgent = async (data: CreateAgent) => {
   console.log(data);
-  router.push({ name: "agent-list" });
+  const res = await createAgent(data);
+  if (res) {
+    makeToast(res.Message);
+    // router.push({ name: "agent-list" });
+  }
 };
 </script>
 

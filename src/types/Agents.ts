@@ -1,15 +1,16 @@
 import type { SimplifiedEnvironment } from "./Environments";
 
 export interface CreateAgent {
-  name: string;
-  attributes: { id?: number; key: string; value: string }[];
-  description?: string;
+  Name: string;
+  Attributes: { ID?: number; Key: string; Value: string }[];
+  GeneralDescription?: string;
+  BusinessID: number;
 }
 
-export type EditAgent = CreateAgent & { id: number };
+export type EditAgent = CreateAgent & { ID: number };
 
 export type GetAgent = EditAgent;
 
-export type AgentTableData = Omit<GetAgent, "attributes"> & {
-  inEnvironments: SimplifiedEnvironment[];
+export type AgentWithSimulation = GetAgent & {
+  InEnvironments: SimplifiedEnvironment[];
 };

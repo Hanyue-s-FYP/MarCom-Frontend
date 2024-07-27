@@ -2,7 +2,7 @@
 import { Icon } from "@iconify/vue/dist/iconify.js";
 
 interface Props {
-  agentAttributes: { id?: number; key: string; value: string }[];
+  agentAttributes: { ID?: number; Key: string; Value: string }[];
   isDeletable?: boolean;
 }
 
@@ -11,7 +11,7 @@ withDefaults(defineProps<Props>(), { isDeletable: false });
 defineEmits<{
   (
     e: "delete",
-    p: { data: { id?: number; key: string; value: string }; indexInArray: number },
+    p: { data: { ID?: number; Key: string; Value: string }; indexInArray: number },
   ): void;
 }>();
 </script>
@@ -26,8 +26,8 @@ defineEmits<{
       v-for="(agentAttribute, i) in agentAttributes"
       :key="i"
     >
-      <span class="font-bold text-sm">{{ agentAttribute.key }}</span>
-      <span class="text-sm">{{ agentAttribute.value }}</span>
+      <span class="font-bold text-sm">{{ agentAttribute.Key }}</span>
+      <span class="text-sm">{{ agentAttribute.Value }}</span>
       <button
         class="btn bg-red-500 text-white text-sm p-0 px-2 py-1 flex gap-2 items-center rounded-[10px]"
         v-if="isDeletable"
