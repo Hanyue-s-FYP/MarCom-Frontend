@@ -4,9 +4,6 @@ import type { BusinessPublicProfile } from "@/types/BusinessProfile";
 import { useToasts } from "@/composable/toasts";
 import { ToastType } from "@/types/Toasts";
 
-// for now only concern with business
-export const getUserById = () => {};
-
 export interface LoginFields {
   Username: string;
   Password: string;
