@@ -36,7 +36,7 @@ onMounted(async () => {
         v-model:description="publicProfile.Description"
         v-model:cover-pic="publicProfile.CoverImgPath"
         :ori-cover-pic="oriCoverPic"
-        @update-success="$router.push({ name: 'dashboard' })"
+        @update-success="$router.push({ name: 'dashboard-data' })"
       />
     </div>
     <div class="flex w-[45%]">

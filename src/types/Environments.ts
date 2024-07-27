@@ -13,6 +13,6 @@ export type GetEnvironment = EditEnvironment & { simulatedCount: number };
 export type EnvironmentTableData = EditEnvironment;
 
 export interface SimplifiedEnvironment {
-  name: string;
-  simulatedCount: number;
+  Name: string;
+  SimulatedCount: number;
 }

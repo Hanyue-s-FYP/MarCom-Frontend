@@ -4,7 +4,6 @@ import ImageFileUpload from "@/components/ImageFileUpload.vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import { updateBusiness, type UpdateBusinessData } from "@/api/user";
-import { ref } from "vue";
 
 const router = useRouter();
 const auth = useAuthStore();

@@ -1,18 +1,24 @@
 <script setup lang="ts">
+import { getProductWithSimplifiedEnv } from "@/api/product";
 import EnvironmentCardSimple from "@/components/EnvironmentCardSimple.vue";
+import type { ProductTableData } from "@/types/Products";
 import { Icon } from "@iconify/vue";
-import { reactive } from "vue";
+import { type Ref, ref, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
-// TODO replace with fetch from backend
-const product = reactive({
-  name: "Product 1",
-  description: "Lorem ipsum dolor sit amet.",
-  sellingPrice: 582.34,
-  cost: 269.89,
-  inEnvironments: [
-    { name: "Environment 1", simulatedCount: 1 },
-    { name: "Environment 2", simulatedCount: 2 },
-  ],
+const route = useRoute();
+
+const product: Ref<ProductTableData | undefined> = ref();
+
+onMounted(async () => {
+  const res = await getProductWithSimplifiedEnv(parseInt(route.params?.id as string));
+  console.log(res);
+  if (!res) {
+    const router = useRouter();
+    router.replace({ name: "product-list" });
+    return;
+  }
+  product.value = res;
 });
 </script>
 
@@ -25,7 +31,7 @@ const product = reactive({
         @click="$router.push({ name: 'product-list' })"
       >
         <Icon icon="mdi:arrow-left" class="text-[2rem]" />
-        <span class="text-xl font-medium">{{ product.name }} Details</span>
+        <span class="text-xl font-medium">{{ product?.Name }} Details</span>
       </div>
       <div class="grid grid-cols-3 gap-2 items-center">
         <button class="btn shadow-common bg-neutral-400 text-white rounded-[10px] px-4 py-2">
@@ -43,23 +49,28 @@ const product = reactive({
       </div>
     </div>
     <div class="max-w-lg pl-2">
-      <h1 class="text-4xl">{{ product.name }}</h1>
-      <p class="text-sm min-h-28 mb-2">{{ product.description }}</p>
+      <h1 class="text-4xl">{{ product?.Name }}</h1>
+      <p class="text-sm min-h-28 mb-2">{{ product?.Description }}</p>
       <div class="shadow-common p-4 border border-neutral-400 rounded-[15px]">
         <div class="grid grid-cols-[2fr,8fr] gap-y-4 text-sm">
           <span class="font-bold">Cost</span>
-          <span>{{ `RM ${product.cost}` }}</span>
+          <span>{{ `RM ${product?.Cost}` }}</span>
           <span class="font-bold">Sells At</span>
-          <span>{{ `RM ${product.sellingPrice}` }}</span>
+          <span>{{ `RM ${product?.Price}` }}</span>
         </div>
       </div>
       <h2 class="text-2xl mt-8 mb-2">
-        Used in {{ product.inEnvironments.length || 0 }} Environments
+        Used in {{ product?.InEnvironments.length || 0 }} Environments
       </h2>
       <div
         class="shadow-common p-2 border border-neutral-400 rounded-[15px] grid grid-cols-2 gap-2"
+        v-if="product?.InEnvironments.length !== 0"
       >
-        <EnvironmentCardSimple v-for="env in product.inEnvironments" :key="env.name" v-bind="env" />
+        <EnvironmentCardSimple
+          v-for="env in product?.InEnvironments"
+          :key="env.Name"
+          v-bind="env"
+        />
       </div>
     </div>
   </div>

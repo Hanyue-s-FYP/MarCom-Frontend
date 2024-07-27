@@ -3,13 +3,16 @@ import { Icon } from "@iconify/vue";
 import ProductForm from "@/components/product/ProductForm.vue";
 import type { CreateProduct } from "@/types/Products";
 import { useRouter } from "vue-router";
+import { createProduct } from "@/api/product";
 
 const router = useRouter();
 
 // TODO save to backend
-const createNewProduct = (data: CreateProduct) => {
+const createNewProduct = async (data: CreateProduct) => {
   console.log(data);
-  router.push({ name: "product-list" });
+  const res = await createProduct(data);
+  console.log(res);
+  // router.push({ name: "product-list" });
 };
 </script>
 

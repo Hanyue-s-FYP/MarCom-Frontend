@@ -2,6 +2,10 @@
 import type { CreateProduct, EditProduct } from "@/types/Products";
 import { reactive } from "vue";
 import InputGeneric from "../InputGeneric.vue";
+import { useAuthStore } from "@/stores/auth";
+import { extractFloat } from "@/utils";
+
+const auth = useAuthStore();
 
 const emit = defineEmits<{
   // kaki assert the type when using the form :))
@@ -16,8 +20,11 @@ const productData: CreateProduct | EditProduct = reactive(
   props.editProps
     ? { ...props.editProps }
     : {
-        name: "",
-        description: "",
+        Name: "",
+        Description: "",
+        Cost: 0,
+        Price: 0,
+        BusinessID: auth.userData?.RoleID ?? 0,
       },
 );
 
@@ -32,27 +39,34 @@ const submitForm = () => {
     <InputGeneric
       name="Product Name"
       type="text"
-      v-model="productData.name"
+      v-model="productData.Name"
       placeholder="Product 1"
     />
     <InputGeneric
       name="Description"
       type="textarea"
       :rows="7"
-      v-model="productData.description"
+      v-model="productData.Description"
       placeholder="Give some context about the product..."
     />
     <InputGeneric
       name="Product Selling Price"
       type="text"
-      v-model="productData.sellingPrice"
+      :model-value="productData.Price"
+      @update:modelValue="(val) => (productData.Price = extractFloat(val))"
       placeholder="123"
     >
       <template #prepend>
         <span>RM</span>
       </template>
     </InputGeneric>
-    <InputGeneric name="Product Cost" type="text" v-model="productData.cost" placeholder="123">
+    <InputGeneric
+      name="Product Cost"
+      type="text"
+      :model-value="productData.Cost"
+      @update:modelValue="(val) => (productData.Cost = extractFloat(val))"
+      placeholder="123"
+    >
       <template #prepend>
         <span>RM</span>
       </template>

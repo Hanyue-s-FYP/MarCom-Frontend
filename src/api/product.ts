@@ -1,0 +1,54 @@
+import type { CreateProduct, EditProduct, GetProduct, ProductTableData } from "@/types/Products";
+import { callApi } from "@/utils";
+import type { GeneralResponse } from ".";
+
+export const getProductsTableByBusinessID = async (id: number): Promise<ProductTableData[]> => {
+  const res = await callApi(`business-products/${id}`, {
+    method: "GET",
+  });
+  const result: ProductTableData[] = [];
+
+  if (res?.Data) {
+    for (const el of res?.Data as GetProduct[]) {
+      const simplifiedEnvs = await callApi(`environments/has-products/${el.ID ?? 0}`, {
+        method: "GET",
+      });
+      result.push({ ...el, InEnvironments: simplifiedEnvs?.Data ?? [] });
+    }
+  }
+
+  return result; // if empty backend will return null, just make it to empty array
+};
+
+export const createProduct = async (data: CreateProduct): Promise<GeneralResponse> => {
+  return await callApi("products", {
+    method: "POST",
+    data,
+  });
+};
+
+export const getProduct = async (id: number): Promise<GetProduct> => {
+  return await callApi(`products/${id}`, {
+    method: "GET",
+  });
+};
+
+export const getProductWithSimplifiedEnv = async (
+  id: number,
+): Promise<ProductTableData | undefined> => {
+  const product = await getProduct(id);
+  if (product) {
+    const inEnvs = await callApi(`environments/has-products/${product?.ID ?? 0}`, {
+      method: "GET",
+    });
+    return { ...product, InEnvironments: inEnvs?.Data ?? [] };
+  }
+  return undefined;
+};
+
+export const updateProduct = async (data: EditProduct): Promise<GeneralResponse> => {
+  return await callApi(`products`, {
+    method: "PUT",
+    data,
+  });
+};

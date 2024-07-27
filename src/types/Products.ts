@@ -1,14 +1,15 @@
 import type { SimplifiedEnvironment } from "./Environments";
 
 export interface CreateProduct {
-  name: string;
-  description?: string;
-  sellingPrice?: number;
-  cost?: number;
+  Name: string;
+  Description: string;
+  Price: number;
+  Cost: number;
+  BusinessID: number;
 }
 
-export type EditProduct = CreateProduct & { id: number };
+export type EditProduct = CreateProduct & { ID: number };
 
 export type GetProduct = EditProduct;
 
-export type ProductTableData = GetProduct & { inEnvironments: SimplifiedEnvironment[] };
+export type ProductTableData = GetProduct & { InEnvironments: SimplifiedEnvironment[] };

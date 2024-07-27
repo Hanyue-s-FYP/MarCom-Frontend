@@ -1,18 +1,23 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { onMounted, ref, type Ref } from "vue";
 import { AgGridVue } from "ag-grid-vue3";
 import DataTableActionColumn from "@/components/DataTableActionColumn.vue";
+import { getProductsTableByBusinessID } from "@/api/product";
+import { useAuthStore } from "@/stores/auth";
+import type { ProductTableData } from "@/types/Products";
+
+const auth = useAuthStore();
 
 // ag-grid doesnt seem to have good ts support
 const columns = [
-  { field: "name" },
-  { field: "description" },
-  { field: "sellingPrice", valueFormatter: (p: any) => "RM " + p.value.toLocaleString() },
-  { field: "cost", valueFormatter: (p: any) => "RM " + p.value.toLocaleString() },
+  { field: "Name" },
+  { field: "Description" },
+  { field: "Price", valueFormatter: (p: any) => "RM " + p?.value?.toLocaleString() },
+  { field: "Cost", valueFormatter: (p: any) => "RM " + p?.value?.toLocaleString() },
   {
-    field: "inEnvironments",
+    field: "InEnvironments",
     headerName: "Used",
-    valueFormatter: (p: any) => `In ${p.value.length} environments`,
+    valueFormatter: (p: any) => `In ${p?.value?.length ?? 0} environments`,
   },
   {
     field: "actions",
@@ -21,76 +26,15 @@ const columns = [
   },
 ];
 
-const items = ref([
-  {
-    name: "Product 1",
-    description: "Lorem ipsum dolor sit amet.",
-    sellingPrice: 582.34,
-    cost: 269.89,
-    inEnvironments: [
-      { name: "Environment 1", simulatedCount: 1 },
-      { name: "Environment 2", simulatedCount: 2 },
-    ],
-  },
-  {
-    name: "Product 2",
-    description: "Consectetur adipiscing elit.",
-    sellingPrice: 123.45,
-    cost: 67.89,
-    inEnvironments: [
-      { name: "Environment 1", simulatedCount: 3 },
-      { name: "Environment 2", simulatedCount: 1 },
-    ],
-  },
-  {
-    name: "Product 3",
-    description: "Sed do eiusmod tempor.",
-    sellingPrice: 754.32,
-    cost: 312.78,
-    inEnvironments: [
-      { name: "Environment 1", simulatedCount: 2 },
-      { name: "Environment 2", simulatedCount: 2 },
-      { name: "Environment 3", simulatedCount: 1 },
-    ],
-  },
-  {
-    name: "Product 4",
-    description: "Incididunt ut labore.",
-    sellingPrice: 987.65,
-    cost: 543.21,
-    inEnvironments: [{ name: "Environment 1", simulatedCount: 1 }],
-  },
-  {
-    name: "Product 5",
-    description: "Dolore magna aliqua.",
-    sellingPrice: 321.98,
-    cost: 123.45,
-    inEnvironments: [
-      { name: "Environment 1", simulatedCount: 2 },
-      { name: "Environment 2", simulatedCount: 1 },
-    ],
-  },
-  {
-    name: "Product 6",
-    description: "Ut enim ad minim veniam.",
-    sellingPrice: 456.78,
-    cost: 234.56,
-    inEnvironments: [
-      { name: "Environment 1", simulatedCount: 3 },
-      { name: "Environment 2", simulatedCount: 1 },
-    ],
-  },
-  {
-    name: "Product 7",
-    description: "Quis nostrud exercitation.",
-    sellingPrice: 678.9,
-    cost: 345.67,
-    inEnvironments: [
-      { name: "Environment 1", simulatedCount: 1 },
-      { name: "Environment 2", simulatedCount: 1 },
-    ],
-  },
-]);
+const items: Ref<ProductTableData[]> = ref([]);
+
+onMounted(async () => {
+  const res = await getProductsTableByBusinessID(auth.userData?.RoleID ?? 0);
+  console.log(res, res.length);
+  if (res) {
+    items.value = res;
+  }
+});
 </script>
 
 <template>
@@ -111,7 +55,7 @@ const items = ref([
       :pagination-page-size="10"
       :pagination-page-size-selector="false"
       @row-clicked="
-        (p: any) => $router.push({ name: 'product-detail', params: { id: p.data.id || 0 } })
+        (p: any) => $router.push({ name: 'product-detail', params: { id: p.data.ID || 0 } })
       "
       pagination
       class="h-full w-full ag-theme-quartz"
