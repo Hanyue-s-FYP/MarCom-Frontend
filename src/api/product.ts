@@ -10,7 +10,7 @@ export const getProductsTableByBusinessID = async (id: number): Promise<ProductT
 
   if (res?.Data) {
     for (const el of res?.Data as GetProduct[]) {
-      const simplifiedEnvs = await callApi(`environments/has-products/${el.ID ?? 0}`, {
+      const simplifiedEnvs = await callApi(`environments/has-product/${el.ID ?? 0}`, {
         method: "GET",
       });
       result.push({ ...el, InEnvironments: simplifiedEnvs?.Data ?? [] });
@@ -38,7 +38,7 @@ export const getProductWithSimplifiedEnv = async (
 ): Promise<ProductTableData | undefined> => {
   const product = await getProduct(id);
   if (product) {
-    const inEnvs = await callApi(`environments/has-products/${product?.ID ?? 0}`, {
+    const inEnvs = await callApi(`environments/has-product/${product?.ID ?? 0}`, {
       method: "GET",
     });
     return { ...product, InEnvironments: inEnvs?.Data ?? [] };
