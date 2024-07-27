@@ -4,6 +4,8 @@ import InputGeneric from "@/components/InputGeneric.vue";
 import { ref } from "vue";
 import { loginUser } from "@/api/user";
 import { useToasts } from "@/composable/toasts";
+import { useAuthStore } from "@/stores/auth";
+import { ToastType } from "@/types/Toasts";
 
 const router = useRouter();
 const { makeToast } = useToasts();
@@ -11,16 +13,18 @@ const username = ref("");
 const password = ref("");
 
 const login = async () => {
-  // TODO make login logic
   const res = await loginUser({
     Username: username.value,
     Password: password.value,
   });
+  // highly possible is just wrong credentials
   if (!res) {
+    makeToast("Invalid credentials, please try again", ToastType.ERROR);
     return;
   }
   localStorage.setItem("userToken", res.Token);
   makeToast(res.Message);
+  await useAuthStore().getMe();
   router.push("/");
 };
 </script>

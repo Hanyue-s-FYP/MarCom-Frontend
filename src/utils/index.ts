@@ -46,19 +46,28 @@ export const callApi = async (
     })
     .catch((err) => {
       console.log(err, err.response, err.response?.data);
+      const { makeToast } = useToasts();
       if (err.response?.status == 401) {
         // if unauthorized then is expired
         // maybe in the future can implement refresh token
         // for now just log out the user
+        // can be 401 for invalid credentials as well, so check specifically if the user is logged in
         const auth = useAuthStore();
-        auth.logout();
+        if (auth.isLoggedIn) {
+          auth.logout();
+          makeToast("Login session expired, please login again");
+        }
         return;
       }
+
       // if got custom error handling then leave the option to make toast to the caller
       if (onError) {
         onError(err);
+        // if is 500 just make toast let everyone know
+        if (err.response?.status == 500) {
+          makeToast(err.response?.data?.message ?? "Sorry, something unexpected happened");
+        }
       } else {
-        const { makeToast } = useToasts();
         makeToast(
           err.response?.data?.Message ?? "Sorry, something unexpected happened",
           ToastType.ERROR,
@@ -68,4 +77,8 @@ export const callApi = async (
       return null;
     })
     .finally(() => setLoading(false));
+};
+
+export const extractFloat = (val: string): number => {
+  return isNaN(parseFloat(val)) ? 0.0 : parseFloat(val);
 };
