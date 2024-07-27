@@ -13,7 +13,6 @@ const { makeToast } = useToasts();
 
 const product: Ref<EditProduct | undefined> = ref();
 
-// TODO save to backend
 const editProduct = async (data: EditProduct) => {
   console.log(data);
   const res = await updateProduct(data);
