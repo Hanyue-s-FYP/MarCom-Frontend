@@ -1,49 +1,17 @@
 <script setup lang="ts">
+import { getEnvironment } from "@/api/environment";
+import type { EnvironmentTableData } from "@/types/Environments";
 import { Icon } from "@iconify/vue";
-import { reactive } from "vue";
+import { type Ref, ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
 
-// TODO replace with fetch from backend
-const environment = reactive({
-  id: 1,
-  name: "Environment 1",
-  description: "Description for Environment 1",
-  products: [
-    {
-      id: 1,
-      name: "Product 1",
-      description: "Description for Product 1",
-      sellingPrice: 100,
-      cost: 50,
-    },
-    {
-      id: 2,
-      name: "Product 2",
-      description: "Description for Product 2",
-      sellingPrice: 150,
-      cost: 75,
-    },
-  ],
-  agents: [
-    {
-      id: 1,
-      name: "Agent 1",
-      description: "Description for Agent 1",
-      attributes: [
-        { key: "key1", value: "value1" },
-        { key: "key2", value: "value2" },
-      ],
-    },
-    {
-      id: 2,
-      name: "Agent 2",
-      description: "Description for Agent 2",
-      attributes: [
-        { key: "key1", value: "value1" },
-        { key: "key2", value: "value2" },
-      ],
-    },
-  ],
-  simulatedCount: 3,
+const route = useRoute();
+const environment: Ref<EnvironmentTableData | undefined> = ref();
+
+onMounted(async () => {
+  const res = await getEnvironment(parseInt(route.params?.id as string));
+  console.log(res);
+  environment.value = res;
 });
 </script>
 
@@ -56,7 +24,7 @@ const environment = reactive({
         @click="$router.push({ name: 'environment-list' })"
       >
         <Icon icon="mdi:arrow-left" class="text-[2rem]" />
-        <span class="text-xl font-medium">{{ environment.name }} Details</span>
+        <span class="text-xl font-medium">{{ environment?.Name }} Details</span>
       </div>
       <div class="grid grid-cols-3 gap-2 items-center">
         <button class="btn shadow-common bg-neutral-400 text-white rounded-[10px] px-4 py-2">
@@ -74,40 +42,40 @@ const environment = reactive({
       </div>
     </div>
     <div class="max-w-lg pl-2">
-      <h1 class="text-4xl">{{ environment.name }}</h1>
-      <p class="text-sm min-h-28 mb-2">{{ environment.description }}</p>
+      <h1 class="text-4xl">{{ environment?.Name }}</h1>
+      <p class="text-sm min-h-28 mb-2">{{ environment?.Description }}</p>
       <!-- products section -->
-      <h2 class="text-2xl mt-8 mb-2">{{ environment.products.length || 0 }} Products</h2>
+      <h2 class="text-2xl mt-8 mb-2">{{ environment?.Products?.length || 0 }} Products</h2>
       <div
         class="shadow-common p-2 border border-neutral-400 rounded-[15px] grid grid-cols-2 gap-2"
       >
         <div
           class="border border-neutral-400 p-2 rounded-[15px] flex"
-          v-for="product in environment.products"
-          :key="product.id"
+          v-for="product in environment?.Products"
+          :key="product.ID"
         >
           <div class="flex flex-col">
-            <span>{{ product.name }}</span>
+            <span>{{ product?.Name }}</span>
             <div class="grid grid-cols-[3fr,6fr] gap-2 text-neutral-400 text-xs font-medium">
-              <span>Cost</span><span>RM {{ product.cost?.toFixed(2) || "0.00" }}</span>
+              <span>Cost</span><span>RM {{ product?.Cost?.toFixed(2) || "0.00" }}</span>
             </div>
             <div class="grid grid-cols-[3fr,6fr] gap-2 text-neutral-400 text-xs font-medium">
-              <span>Sells At</span><span>RM {{ product.sellingPrice?.toFixed(2) || "0.00" }}</span>
+              <span>Sells At</span><span>RM {{ product?.Price?.toFixed(2) || "0.00" }}</span>
             </div>
           </div>
         </div>
       </div>
       <!-- agents section -->
-      <h2 class="text-2xl mt-8 mb-2">{{ environment.products.length || 0 }} Agents</h2>
+      <h2 class="text-2xl mt-8 mb-2">{{ environment?.Agents?.length || 0 }} Agents</h2>
       <div
         class="shadow-common p-2 border border-neutral-400 rounded-[15px] grid grid-cols-2 gap-2"
       >
         <div
           class="border border-neutral-400 p-2 rounded-[15px] flex gap-2"
-          v-for="agent in environment.agents"
-          :key="agent.id"
+          v-for="agent in environment?.Agents"
+          :key="agent.ID"
         >
-          <span>{{ agent.name }}</span>
+          <span>{{ agent?.Name }}</span>
         </div>
       </div>
     </div>

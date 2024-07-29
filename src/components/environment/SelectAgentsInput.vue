@@ -1,73 +1,31 @@
 <script setup lang="ts">
 import { Icon } from "@iconify/vue/dist/iconify.js";
-import { computed, ref } from "vue";
+import { computed, onMounted, ref, type Ref } from "vue";
 import InputGeneric from "../InputGeneric.vue";
 import type { GetAgent } from "@/types/Agents";
+import { getAgents } from "@/api/agent";
+import { useAuthStore } from "@/stores/auth";
 
 const model = defineModel<GetAgent[]>({ default: [] });
+const auth = useAuthStore();
 
-const agents = ref([
-  {
-    id: 1,
-    name: "Agent 1",
-    description: "Description for Agent 1",
-    attributes: [
-      { key: "key1", value: "value1" },
-      { key: "key2", value: "value2" },
-    ],
-  },
-  {
-    id: 2,
-    name: "Agent 2",
-    description: "Description for Agent 2",
-    attributes: [
-      { key: "key1", value: "value1" },
-      { key: "key2", value: "value2" },
-    ],
-  },
-  {
-    id: 3,
-    name: "Agent 3",
-    description: "Description for Agent 3",
-    attributes: [
-      { key: "key1", value: "value1" },
-      { key: "key2", value: "value2" },
-    ],
-  },
-  {
-    id: 4,
-    name: "Agent 4",
-    description: "Description for Agent 4",
-    attributes: [
-      { key: "key1", value: "value1" },
-      { key: "key2", value: "value2" },
-    ],
-  },
-  {
-    id: 5,
-    name: "Agent 5",
-    description: "Description for Agent 5",
-    attributes: [
-      { key: "key1", value: "value1" },
-      { key: "key2", value: "value2" },
-    ],
-  },
-  {
-    id: 6,
-    name: "Agent 6",
-    description: "Description for Agent 6",
-    attributes: [
-      { key: "key1", value: "value1" },
-      { key: "key2", value: "value2" },
-    ],
-  },
-]);
+const agents: Ref<GetAgent[]> = ref([]);
+const searchTerm = ref("");
 
 const selectableAgents = computed(() =>
   agents.value.filter(
-    (a) => !(model.value.includes(a) || model.value.some((ma) => ma.id === a.id)),
+    // similar logic to SelectProductsInput
+    (a) =>
+      !(model.value.includes(a) || model.value.some((ma) => ma.ID === a.ID)) &&
+      (searchTerm.value.trim().length !== 0 ? a.Name.includes(searchTerm.value.trim()) : true),
   ),
 );
+
+onMounted(async () => {
+  const res = await getAgents(auth.userData?.RoleID ?? 0);
+  console.log(res);
+  agents.value = res;
+});
 </script>
 
 <template>
@@ -77,15 +35,15 @@ const selectableAgents = computed(() =>
         class="bg-neutral-400 bg-opacity-40 rounded-[15px] flex items-center justify-center font-bold min-h-[69px]"
         v-if="model.length === 0"
       >
-        Add products by selecting from the list below
+        Add agents by selecting from the list below
       </div>
       <div class="flex flex-wrap gap-3 items-center" v-else>
         <div
           class="border border-neutral-400 p-2 rounded-[15px] flex gap-2"
           v-for="(agent, i) in model"
-          :key="agent.id"
+          :key="agent.ID"
         >
-          <span>{{ agent.name }}</span>
+          <span>{{ agent.Name }}</span>
           <button class="hover:text-red-500" @click="model.splice(i, 1)">
             <Icon icon="mdi:close" class="text-lg" />
           </button>
@@ -97,23 +55,42 @@ const selectableAgents = computed(() =>
         type="text"
         name="searchProduct"
         placeholder="Search Agent Name"
+        v-model="searchTerm"
         :show-label="false"
       >
         <template #prepend>
           <Icon icon="material-symbols:search" class="text-lg h-full" />
         </template>
       </InputGeneric>
-      <div class="flex flex-col gap-1 mt-2 max-h-56 overflow-auto">
+      <div class="flex flex-col gap-1 mt-2 max-h-56 overflow-auto" v-if="selectableAgents.length">
         <div
           class="border border-neutral-400 rounded-[15px] p-2 flex justify-between items-center"
           v-for="agent in selectableAgents"
-          :key="agent.id"
+          :key="agent.ID"
         >
-          <span>{{ agent.name }}</span>
+          <span>{{ agent.Name }}</span>
           <button class="btn-primary p-0 px-6 py-1.5 rounded-[12px]" @click="model.push(agent)">
             Add
           </button>
         </div>
+      </div>
+      <div class="mt-2 flex flex-col items-center justify-center min-h-[69px]" v-else>
+        <span class="font-bold">
+          No Agents
+          {{
+            // whitespaces are not relevant in span tags
+            searchTerm.trim().length !== 0 ? `That Match The Search Term ${searchTerm.trim()} ` : ""
+          }}
+          Yet
+        </span>
+        <!-- Only show create if not search -->
+        <RouterLink
+          :to="{ name: 'new-agent' }"
+          class="text-primary"
+          v-if="searchTerm.trim().length === 0"
+        >
+          Create One
+        </RouterLink>
       </div>
     </div>
   </div>

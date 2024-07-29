@@ -2,14 +2,15 @@ import type { GetAgent } from "./Agents";
 import type { GetProduct } from "./Products";
 
 export interface CreateEnvironment {
-  name: string;
-  description: string;
-  products: GetProduct[];
-  agents: GetAgent[];
+  Name: string;
+  Description: string;
+  Products: GetProduct[];
+  Agents: GetAgent[];
+  BusinessID: number;
 }
 
-export type EditEnvironment = CreateEnvironment & { id: number };
-export type GetEnvironment = EditEnvironment & { simulatedCount: number };
+export type EditEnvironment = CreateEnvironment & { ID: number };
+export type GetEnvironment = EditEnvironment & { SimulatedCount: number };
 export type EnvironmentTableData = EditEnvironment;
 
 export interface SimplifiedEnvironment {

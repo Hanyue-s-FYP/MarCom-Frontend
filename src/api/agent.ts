@@ -3,13 +3,11 @@ import { callApi } from "@/utils";
 import type { GeneralResponse } from ".";
 
 export const getAgentTableByBusinessID = async (id: number): Promise<AgentWithSimulation[]> => {
-  const res = await callApi(`business-agents/${id}`, {
-    method: "GET",
-  });
+  const res = await getAgents(id);
   const result: AgentWithSimulation[] = [];
 
-  if (res?.Data) {
-    for (const el of res?.Data as GetAgent[]) {
+  if (res) {
+    for (const el of res) {
       const simplifiedEnvs = await callApi(`environments/has-product/${el.ID ?? 0}`, {
         method: "GET",
       });
@@ -18,6 +16,18 @@ export const getAgentTableByBusinessID = async (id: number): Promise<AgentWithSi
   }
 
   return result; // if empty backend will return null, just make it to empty array
+};
+
+export const getAgents = async (id: number): Promise<GetAgent[]> => {
+  const res = await callApi(`business-agents/${id}`, {
+    method: "GET",
+  });
+
+  if (res?.Data) {
+    return res?.Data;
+  }
+
+  return [];
 };
 
 export const getAgent = async (id: number): Promise<GetAgent> => {

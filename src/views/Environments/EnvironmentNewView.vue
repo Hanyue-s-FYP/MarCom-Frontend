@@ -3,13 +3,20 @@ import { Icon } from "@iconify/vue";
 import EnvironmentForm from "@/components/environment/EnvironmentForm.vue";
 import { useRouter } from "vue-router";
 import type { CreateEnvironment } from "@/types/Environments";
+import { createNewEnvironment } from "@/api/environment";
+import { useToasts } from "@/composable/toasts";
 
 const router = useRouter();
+const { makeToast } = useToasts();
 
 // TODO save to backend
-const createNewEnvironment = (data: CreateEnvironment) => {
-  console.log(data);
-  router.push({ name: "environment-list" });
+const createEnvironment = async (data: CreateEnvironment) => {
+  const res = await createNewEnvironment(data);
+  console.log(res);
+  if (res) {
+    makeToast(res.Message);
+    // router.push({ name: "environment-list" });
+  }
 };
 </script>
 
@@ -28,7 +35,7 @@ const createNewEnvironment = (data: CreateEnvironment) => {
     <div class="max-w-xl pl-2">
       <!-- can assert -->
       <EnvironmentForm
-        @submit="(data) => createNewEnvironment(data as CreateEnvironment)"
+        @submit="(data) => createEnvironment(data as CreateEnvironment)"
         @cancel="router.push({ name: 'environment-list' })"
       />
     </div>

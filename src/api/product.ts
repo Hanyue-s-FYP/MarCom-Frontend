@@ -3,13 +3,11 @@ import { callApi } from "@/utils";
 import type { GeneralResponse } from ".";
 
 export const getProductsTableByBusinessID = async (id: number): Promise<ProductTableData[]> => {
-  const res = await callApi(`business-products/${id}`, {
-    method: "GET",
-  });
+  const res = await getProducts(id);
   const result: ProductTableData[] = [];
 
-  if (res?.Data) {
-    for (const el of res?.Data as GetProduct[]) {
+  if (res) {
+    for (const el of res as GetProduct[]) {
       const simplifiedEnvs = await callApi(`environments/has-product/${el.ID ?? 0}`, {
         method: "GET",
       });
@@ -18,6 +16,18 @@ export const getProductsTableByBusinessID = async (id: number): Promise<ProductT
   }
 
   return result; // if empty backend will return null, just make it to empty array
+};
+
+export const getProducts = async (id: number): Promise<GetProduct[]> => {
+  const res = await callApi(`business-products/${id}`, {
+    method: "GET",
+  });
+
+  if (res?.Data) {
+    return res?.Data;
+  }
+
+  return [];
 };
 
 export const createProduct = async (data: CreateProduct): Promise<GeneralResponse> => {
