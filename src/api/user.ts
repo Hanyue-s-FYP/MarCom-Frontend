@@ -1,8 +1,9 @@
 import { callApi } from "@/utils";
 import type { GeneralResponse } from ".";
-import type { BusinessPublicProfile } from "@/types/BusinessProfile";
+import type { BusinessPublicProfile, RegisterBusinessData } from "@/types/BusinessProfile";
 import { useToasts } from "@/composable/toasts";
 import { ToastType } from "@/types/Toasts";
+import type { GetUser } from "@/types/User";
 
 export interface LoginFields {
   Username: string;
@@ -17,19 +18,6 @@ export const loginUser = async (data: LoginFields): Promise<LoginResponse> => {
     data,
   });
 };
-
-export type User = {
-  Username: string;
-  Password: string;
-  Email: string;
-  Status: number; // for now just 1 for all first
-  PhoneNumber: string;
-};
-
-export type RegisterBusinessData = User &
-  Omit<BusinessPublicProfile, "CoverPic"> & { CoverImgPath: string };
-
-export type GetUser = Omit<User, "Password"> & { Role: string; RoleID: number };
 
 export const registerBusiness = async (data: RegisterBusinessData): Promise<GeneralResponse> => {
   return await callApi("/register-business", {
