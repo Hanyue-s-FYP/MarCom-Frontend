@@ -4,16 +4,15 @@ import { useRouter } from "vue-router";
 import { useToasts } from "@/composable/toasts";
 import type { CreateSimulation } from "@/types/Simulations";
 import SimulationForm from "@/components/simulation/SimulationForm.vue";
+import { createSimulation } from "@/api/simulation";
 
 const router = useRouter();
 const { makeToast } = useToasts();
 
-// TODO save to backend
 const createNewSimulation = async (data: CreateSimulation) => {
-  console.log(data);
-  const res = null;
+  const res = await createSimulation(data);
   if (res) {
-    // makeToast(res.Message);
+    makeToast(res.Message);
     router.push({ name: "simulation-list" });
   }
 };

@@ -89,3 +89,10 @@ export const SimulationBadgeType = {
   RUNNING: BadgeType.WARN,
   COMPLETE: BadgeType.SUCCESS,
 };
+
+export const SimulationEventBadgeType = {
+  SKIP: BadgeType.NEUTRAL,
+  ACTION_RESP: BadgeType.WARN,
+  BUY: BadgeType.SUCCESS,
+  TALK: BadgeType.PRIMARY,
+};

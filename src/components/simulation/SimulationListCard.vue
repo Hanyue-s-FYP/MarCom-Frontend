@@ -24,7 +24,7 @@ defineProps<SimulationWithEnvName>();
     </div>
     <div class="flex items-center gap-2 text-neutral-400">
       <Icon icon="grommet-icons:cycle" />
-      <span class="text-sm"> {{ SimulationCycles.length }} Cycles </span>
+      <span class="text-sm"> {{ SimulationCycles?.length ?? 0 }} Cycles </span>
     </div>
     <BadgeGeneral
       :text="SimulationStatus[Status]"

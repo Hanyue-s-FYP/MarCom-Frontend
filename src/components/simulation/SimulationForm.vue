@@ -62,6 +62,7 @@ onMounted(async () => {
         name="environment"
         id="environment"
         class="border border-neutral-400 rounded-[12px] py-2 px-3 relative focus:border-primary focus:text-primary"
+        v-model="simulationData.EnvironmentID"
       >
         <option value="-1">Please select environment</option>
         <option v-for="e in environments" :key="e.ID" :value="e.ID">{{ e.Name }}</option>

@@ -15,8 +15,7 @@ export const SimulationEventType = ["BUY", "SKIP", "TALK", "SIMULATION", "ACTION
 // SimulationCycle is assumed to be according to order
 export interface SimulationCycle {
   ID: number;
-  Profit: number;
-  SimulationEvents: SimulationEvent[];
+  SimulationEvents?: SimulationEvent[];
 }
 
 export interface CreateSimulation {

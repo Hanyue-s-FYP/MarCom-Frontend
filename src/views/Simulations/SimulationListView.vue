@@ -1,55 +1,21 @@
 <script setup lang="ts">
+import { getSimulationList } from "@/api/simulation";
 import SimulationListCard from "@/components/simulation/SimulationListCard.vue";
+import { useAuthStore } from "@/stores/auth";
 import type { SimulationWithEnvName } from "@/types/Simulations";
-import { ref, type Ref } from "vue";
+import { onMounted, ref, type Ref } from "vue";
 
-// TODO change to fetch from backend
-const simulations: Ref<SimulationWithEnvName[]> = ref([
-  {
-    ID: 1,
-    EnvironmentID: 1,
-    EnvironmentName: "Environment Alpha",
-    BusinessID: 1,
-    SimulationCycles: [],
-    Name: "Simulation Alpha",
-    MaxCycleCount: 10,
-    IsPriceOptEnabled: true,
-    Status: 1,
-  },
-  {
-    ID: 2,
-    EnvironmentID: 1,
-    EnvironmentName: "Environment Alpha",
-    BusinessID: 1,
-    SimulationCycles: [],
-    Name: "Simulation Alpha",
-    MaxCycleCount: 10,
-    IsPriceOptEnabled: true,
-    Status: 1,
-  },
-  {
-    ID: 3,
-    EnvironmentID: 1,
-    EnvironmentName: "Environment Alpha",
-    BusinessID: 1,
-    SimulationCycles: [],
-    Name: "Simulation Alpha",
-    MaxCycleCount: 10,
-    IsPriceOptEnabled: true,
-    Status: 1,
-  },
-  {
-    ID: 4,
-    EnvironmentID: 1,
-    EnvironmentName: "Environment Alpha",
-    BusinessID: 1,
-    SimulationCycles: [],
-    Name: "Simulation Alpha",
-    MaxCycleCount: 10,
-    IsPriceOptEnabled: true,
-    Status: 1,
-  },
-]);
+const auth = useAuthStore();
+
+const simulations: Ref<SimulationWithEnvName[]> = ref([]);
+
+onMounted(async () => {
+  const res = await getSimulationList(auth.userData?.RoleID ?? 0);
+  console.log(res);
+  if (res) {
+    simulations.value = res;
+  }
+});
 </script>
 
 <template>

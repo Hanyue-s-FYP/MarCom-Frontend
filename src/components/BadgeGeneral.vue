@@ -9,6 +9,10 @@ defineProps<{ text: string; type: BadgeType }>();
 </template>
 
 <style scoped>
+.PRIMARY {
+  @apply text-[#002BB2] bg-[#CCD8FF];
+}
+
 .NEUTRAL {
   @apply text-white bg-neutral-400;
 }
