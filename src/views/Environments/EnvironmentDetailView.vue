@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { getEnvironment } from "@/api/environment";
-import type { EnvironmentTableData } from "@/types/Environments";
+import type { EnvironmentListData } from "@/types/Environments";
 import { Icon } from "@iconify/vue";
 import { type Ref, ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
-const environment: Ref<EnvironmentTableData | undefined> = ref();
+const environment: Ref<EnvironmentListData | undefined> = ref();
 
 onMounted(async () => {
   const res = await getEnvironment(parseInt(route.params?.id as string));

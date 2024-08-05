@@ -110,22 +110,22 @@ const router = createRouter({
         {
           path: "",
           name: "simulation-list",
-          component: {}, // TODO change this
+          component: () => import("@/views/Simulations/SimulationListView.vue"),
         },
         {
           path: "new-simulation",
           name: "new-simulation",
-          component: {}, // TODO change this
+          component: () => import("@/views/Simulations/SimulationNewView.vue"),
         },
         {
           path: ":id",
           name: "simulation-detail",
-          component: {}, // TODO change this
+          component: () => import("@/views/Simulations/SimulationDetailsView.vue"),
         },
         {
           path: "edit-simulation/:id",
           name: "edit-simulation",
-          component: {}, // TODO change this
+          component: () => import("@/views/Simulations/SimulationEditView.vue"),
         },
       ],
     },

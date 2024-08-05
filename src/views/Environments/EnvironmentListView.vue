@@ -2,7 +2,7 @@
 import { onMounted, ref, type Ref } from "vue";
 import { AgGridVue } from "ag-grid-vue3";
 import DataTableActionColumn from "@/components/DataTableActionColumn.vue";
-import type { EnvironmentTableData } from "@/types/Environments";
+import type { EnvironmentListData } from "@/types/Environments";
 import { getEnvironmentTable } from "@/api/environment";
 import { useAuthStore } from "@/stores/auth";
 
@@ -26,7 +26,7 @@ const columns = [
   },
 ];
 
-const items: Ref<EnvironmentTableData[]> = ref([]);
+const items: Ref<EnvironmentListData[]> = ref([]);
 onMounted(async () => {
   const res = await getEnvironmentTable(useAuthStore().userData?.RoleID ?? 0);
   console.log(res);

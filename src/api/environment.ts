@@ -1,8 +1,4 @@
-import type {
-  CreateEnvironment,
-  EditEnvironment,
-  EnvironmentTableData,
-} from "@/types/Environments";
+import type { CreateEnvironment, EditEnvironment, EnvironmentListData } from "@/types/Environments";
 import type { GeneralResponse } from ".";
 import { callApi } from "@/utils";
 
@@ -14,7 +10,7 @@ export const createNewEnvironment = async (data: CreateEnvironment): Promise<Gen
 };
 
 // id is business id
-export const getEnvironmentTable = async (id: number): Promise<EnvironmentTableData[]> => {
+export const getEnvironmentTable = async (id: number): Promise<EnvironmentListData[]> => {
   const res = await callApi(`business-environments/${id}`, {
     method: "GET",
   });
@@ -24,8 +20,10 @@ export const getEnvironmentTable = async (id: number): Promise<EnvironmentTableD
   return [];
 };
 
+export const getEnvironments = getEnvironmentTable; // alias for clearer usage
+
 // id is environment id
-export const getEnvironment = async (id: number): Promise<EnvironmentTableData> => {
+export const getEnvironment = async (id: number): Promise<EnvironmentListData> => {
   const res = await callApi(`environments/${id}`, {
     method: "GET",
   });

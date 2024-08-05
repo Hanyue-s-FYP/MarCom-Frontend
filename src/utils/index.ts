@@ -1,6 +1,7 @@
 import { useLoading } from "@/composable/loader";
 import { useToasts } from "@/composable/toasts";
 import { useAuthStore } from "@/stores/auth";
+import { BadgeType } from "@/types/Badge";
 import { ToastType } from "@/types/Toasts";
 import axios, { type AxiosRequestConfig } from "axios";
 
@@ -81,4 +82,10 @@ export const callApi = async (
 
 export const extractFloat = (val: string): number => {
   return isNaN(parseFloat(val)) ? 0.0 : parseFloat(val);
+};
+
+export const SimulationBadgeType = {
+  IDLE: BadgeType.NEUTRAL,
+  RUNNING: BadgeType.WARN,
+  COMPLETE: BadgeType.SUCCESS,
 };

@@ -11,7 +11,7 @@ export interface CreateEnvironment {
 
 export type EditEnvironment = CreateEnvironment & { ID: number };
 export type GetEnvironment = EditEnvironment & { SimulatedCount: number };
-export type EnvironmentTableData = EditEnvironment;
+export type EnvironmentListData = EditEnvironment;
 
 export interface SimplifiedEnvironment {
   Name: string;
