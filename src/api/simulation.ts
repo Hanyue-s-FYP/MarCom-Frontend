@@ -54,7 +54,7 @@ export const updateSimulation = async (data: EditSimulation): Promise<GeneralRes
 };
 
 export const startSimulation = async (id: number): Promise<GeneralResponse> => {
-  return await callApi(`start-simulation/${id}`, {
+  return await callApi(`simulations/start/${id}`, {
     method: "GET",
   });
 };

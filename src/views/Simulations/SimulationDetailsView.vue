@@ -16,6 +16,7 @@ import { Icon } from "@iconify/vue";
 import { onMounted, ref, type Ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import VueApexCharts from "vue3-apexcharts";
+import { EventSource } from "extended-eventsource";
 
 const route = useRoute();
 const { makeToast } = useToasts();
@@ -154,13 +155,43 @@ const toggleSimulationStatus = async () => {
       }
       makeToast(res.Message);
       // maybe subscribe to the event source for stream updates
+      makeListenerForUpdate(simulationDetail.value.ID);
     }
   }
 };
 
+let simulationUpdateEventSource: EventSource;
+const makeListenerForUpdate = (id: number) => {
+  simulationUpdateEventSource = new EventSource(
+    `${import.meta.env.VITE_SERVER_URL}/simulations/listen-for-event/${id}`,
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+      },
+    },
+  );
+  simulationUpdateEventSource.onmessage = (event) => {
+    console.log(event);
+  };
+  simulationUpdateEventSource.onerror = (e) => {
+    console.log(e, simulationUpdateEventSource);
+    if (simulationUpdateEventSource.readyState === 2) {
+      simulationUpdateEventSource.close();
+    }
+  };
+  simulationUpdateEventSource.addEventListener("simulation-event", (event) => {
+    console.log(event.data);
+  });
+  simulationUpdateEventSource.addEventListener("simulation-complete", (event) => {
+    console.log("simulation end signal received", event.data);
+    simulationUpdateEventSource.close();
+  });
+};
+
 // TODO fetch simulation from backend
 onMounted(async () => {
-  const res = await getSimulation(parseInt(route.params?.id as string));
+  const id = parseInt(route.params?.id as string);
+  const res = await getSimulation(id);
   const router = useRouter();
   if (!res) {
     router.push({ name: "simulation-list" });
@@ -172,6 +203,11 @@ onMounted(async () => {
     return;
   }
   simulationDetail.value = { ...res, EnvironmentName: envRes.Name };
+
+  // can return early if is not running
+  if (SimulationStatus[res.Status] !== "RUNNING") return;
+
+  makeListenerForUpdate(id);
 });
 </script>
 
