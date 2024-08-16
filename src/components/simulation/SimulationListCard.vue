@@ -2,7 +2,7 @@
 import { SimulationStatus, type SimulationWithEnvName } from "@/types/Simulations";
 import { Icon } from "@iconify/vue";
 import BadgeGeneral from "../BadgeGeneral.vue";
-import { SimulationBadgeType } from "@/utils";
+import { SimulationBadgeType } from "@/utils/simulations";
 
 defineProps<SimulationWithEnvName>();
 </script>

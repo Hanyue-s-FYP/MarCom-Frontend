@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { SimulationEventBadgeType } from "@/utils";
+import { SimulationEventBadgeType } from "@/utils/simulations";
 import BadgeGeneral from "../BadgeGeneral.vue";
 
 defineProps<{
   title: string;
   eventDetail: string;
-  eventType?: string; // only accepting BUY (success), SKIP (neutral), TALK (primary) and ACTION_RESP (warn)
+  eventType?: string; // only accepting BUY (success), SKIP (neutral), MESSAGE (primary) SIMULATION (warn) and ACTION_RESP (warn)
 }>();
 </script>
 

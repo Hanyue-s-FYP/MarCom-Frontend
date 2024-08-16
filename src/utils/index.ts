@@ -83,16 +83,3 @@ export const callApi = async (
 export const extractFloat = (val: string): number => {
   return isNaN(parseFloat(val)) ? 0.0 : parseFloat(val);
 };
-
-export const SimulationBadgeType = {
-  IDLE: BadgeType.NEUTRAL,
-  RUNNING: BadgeType.WARN,
-  COMPLETE: BadgeType.SUCCESS,
-};
-
-export const SimulationEventBadgeType = {
-  SKIP: BadgeType.NEUTRAL,
-  ACTION_RESP: BadgeType.WARN,
-  BUY: BadgeType.SUCCESS,
-  TALK: BadgeType.PRIMARY,
-};

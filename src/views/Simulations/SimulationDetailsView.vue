@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { getEnvironment } from "@/api/environment";
-import { getSimulation, startSimulation } from "@/api/simulation";
+import {
+  getSimulation,
+  getSimulationCycle,
+  getSimulationCycles,
+  startSimulation,
+} from "@/api/simulation";
 import BadgeGeneral from "@/components/BadgeGeneral.vue";
 import SimulationCycleCard from "@/components/simulation/SimulationCycleCard.vue";
 import SimulationEventCard from "@/components/simulation/SimulationEventCard.vue";
@@ -11,118 +16,28 @@ import {
   SimulationStatus,
   type SimulationWithEnvName,
 } from "@/types/Simulations";
-import { SimulationBadgeType } from "@/utils";
+import {
+  SimulationBadgeType,
+  transformSimulationEventAPIToDetail,
+  type SimulationEventDetail,
+} from "@/utils/simulations";
 import { Icon } from "@iconify/vue";
 import { onMounted, ref, type Ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import VueApexCharts from "vue3-apexcharts";
 import { EventSource } from "extended-eventsource";
+import type { EnvironmentListData } from "@/types/Environments";
+
+type ComplexSimulationEvent = SimulationEventDetail & {
+  CycleId: number;
+};
 
 const route = useRoute();
 const { makeToast } = useToasts();
 
+// save a copy, no need keep going back and forth to get the things needed
+const envDetail: Ref<EnvironmentListData | undefined> = ref();
 const simulationDetail: Ref<SimulationWithEnvName | undefined> = ref();
-
-// IDEA: initial fetch out first, then subscribe to SSE on new cycles and new cycle events
-const simulationDetails: SimulationWithEnvName = {
-  ID: 1,
-  EnvironmentID: 1,
-  EnvironmentName: "Environment Alpha",
-  BusinessID: 1,
-  SimulationCycles: [
-    {
-      ID: 1,
-      SimulationEvents: [
-        {
-          ID: 1,
-          Prompt: "Initializing simulation environment",
-          EventType: 3, // SIMULATION
-          EventDescription: "Environment setup and initial conditions applied.",
-        },
-        {
-          ID: 2,
-          Prompt: "Agent 1 takes action",
-          EventType: 0, // BUY
-          EventDescription: "Agent 1 buys Product A.",
-          Agent: {
-            ID: 1,
-            Name: "Agent Alpha",
-            Attributes: [],
-            BusinessID: 1,
-          },
-        },
-        {
-          ID: 3,
-          Prompt: "Simulation cycle complete",
-          EventType: 4, // ACTION_RESP
-          EventDescription: "Results of Agent 1's actions processed.",
-        },
-      ],
-    },
-    {
-      ID: 2,
-      SimulationEvents: [
-        {
-          ID: 4,
-          Prompt: "Agent 2 takes action",
-          EventType: 2, // TALK
-          EventDescription: "Agent 2 communicates with Agent 3.",
-          Agent: {
-            ID: 2,
-            Name: "Agent Beta",
-            Attributes: [],
-            BusinessID: 1,
-          },
-        },
-        {
-          ID: 5,
-          Prompt: "Agent 3 decides to skip",
-          EventType: 1, // SKIP
-          EventDescription: "Agent 3 skips the current opportunity.",
-          Agent: {
-            ID: 3,
-            Name: "Agent Gamma",
-            Attributes: [],
-            BusinessID: 1,
-          },
-        },
-      ],
-    },
-    {
-      ID: 2,
-      SimulationEvents: [
-        {
-          ID: 4,
-          Prompt: "Agent 2 takes action",
-          EventType: 2, // TALK
-          EventDescription: "Agent 2 communicates with Agent 3.",
-          Agent: {
-            ID: 2,
-            Name: "Agent Beta",
-            Attributes: [],
-            BusinessID: 1,
-          },
-        },
-        {
-          ID: 5,
-          Prompt: "Agent 3 decides to skip",
-          EventType: 1, // SKIP
-          EventDescription: "Agent 3 skips the current opportunity.",
-          Agent: {
-            ID: 3,
-            Name: "Agent Gamma",
-            Attributes: [],
-            BusinessID: 1,
-          },
-        },
-      ],
-    },
-  ],
-  Name: "Simulation Alpha",
-  MaxCycleCount: 10,
-  IsPriceOptEnabled: true,
-  Status: 1,
-};
 
 // le chart stuff (maybe migrate into own component)
 const chartOptions = {
@@ -154,6 +69,9 @@ const toggleSimulationStatus = async () => {
         return;
       }
       makeToast(res.Message);
+      // possible got stuffs already happen before event source start listening, fetch all the events and cycles out first
+      updateSimulationCycles(simulationDetail.value.ID);
+
       // maybe subscribe to the event source for stream updates
       makeListenerForUpdate(simulationDetail.value.ID);
     }
@@ -179,13 +97,75 @@ const makeListenerForUpdate = (id: number) => {
       simulationUpdateEventSource.close();
     }
   };
-  simulationUpdateEventSource.addEventListener("simulation-event", (event) => {
+  simulationUpdateEventSource.addEventListener("simulation-event", async (event) => {
     console.log(event.data);
+    const data: ComplexSimulationEvent = JSON.parse(event.data);
+    if (simulationDetail.value) {
+      // access the cycle for which this event belongs to
+      const { CycleId, ...rest } = data;
+      const cycle = simulationDetail.value.SimulationCycles?.find((cycle) => cycle.ID === CycleId);
+      if (cycle) {
+        if (cycle.SimulationEvents) {
+          cycle.SimulationEvents.push(
+            transformSimulationEventAPIToDetail(
+              rest,
+              envDetail.value?.Agents ?? [],
+              envDetail.value?.Products ?? [],
+            ) ?? rest,
+          );
+        } else {
+          cycle.SimulationEvents = [
+            transformSimulationEventAPIToDetail(
+              rest,
+              envDetail.value?.Agents ?? [],
+              envDetail.value?.Products ?? [],
+            ) ?? rest,
+          ];
+        }
+      } else {
+        const cycle = await getSimulationCycle(CycleId);
+        if (cycle) {
+          cycle.SimulationEvents = [
+            transformSimulationEventAPIToDetail(
+              rest,
+              envDetail.value?.Agents ?? [],
+              envDetail.value?.Products ?? [],
+            ) ?? rest,
+          ];
+          // new cycle should obviously be behind d right
+          if (simulationDetail.value.SimulationCycles) {
+            simulationDetail.value.SimulationCycles.push(cycle);
+          } else {
+            simulationDetail.value.SimulationCycles = [cycle];
+          }
+        }
+      }
+    }
   });
   simulationUpdateEventSource.addEventListener("simulation-complete", (event) => {
     console.log("simulation end signal received", event.data);
+    makeToast("Simulation completed");
     simulationUpdateEventSource.close();
   });
+};
+
+const updateSimulationCycles = async (id: number) => {
+  if (simulationDetail.value) {
+    const cycleRes = await getSimulationCycles(id);
+    console.log(cycleRes);
+    cycleRes.map(
+      (cycle) =>
+        (cycle.SimulationEvents = cycle.SimulationEvents?.map(
+          (ev) =>
+            transformSimulationEventAPIToDetail(
+              ev,
+              envDetail.value?.Agents ?? [],
+              envDetail.value?.Products ?? [],
+            ) ?? ev,
+        )),
+    );
+    simulationDetail.value.SimulationCycles = cycleRes;
+  }
 };
 
 // TODO fetch simulation from backend
@@ -204,9 +184,10 @@ onMounted(async () => {
   }
   simulationDetail.value = { ...res, EnvironmentName: envRes.Name };
 
-  // can return early if is not running
-  if (SimulationStatus[res.Status] !== "RUNNING") return;
+  updateSimulationCycles(id);
 
+  // can return early if is not running (so only make listener when it is running)
+  if (SimulationStatus[res.Status] !== "RUNNING") return;
   makeListenerForUpdate(id);
 });
 </script>
@@ -255,6 +236,7 @@ onMounted(async () => {
             />
             <SimulationStatusToggleButton
               :current-state="simulationDetail?.Status ?? 0"
+              v-if="simulationDetail && !(SimulationStatus[simulationDetail.Status] === 'COMPLETE')"
               @click="toggleSimulationStatus"
             />
           </div>
@@ -300,7 +282,7 @@ onMounted(async () => {
               ?.SimulationEvents ?? []"
             :key="e.ID"
             :title="e.Agent ? e.Agent.Name : 'Simulation Engine'"
-            :event-detail="e.EventDescription"
+            :event-detail="(e as SimulationEventDetail)?.ActualContent ?? e.EventDescription"
             v-bind="e.EventType === 3 ? {} : { eventType: SimulationEventType[e.EventType] }"
           />
         </div>

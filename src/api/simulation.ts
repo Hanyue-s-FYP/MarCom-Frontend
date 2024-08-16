@@ -2,6 +2,7 @@ import type {
   CreateSimulation,
   EditSimulation,
   GetSimulation,
+  SimulationCycle,
   SimulationWithEnvName,
 } from "@/types/Simulations";
 import type { GeneralResponse } from ".";
@@ -55,6 +56,22 @@ export const updateSimulation = async (data: EditSimulation): Promise<GeneralRes
 
 export const startSimulation = async (id: number): Promise<GeneralResponse> => {
   return await callApi(`simulations/start/${id}`, {
+    method: "GET",
+  });
+};
+
+export const getSimulationCycles = async (id: number): Promise<SimulationCycle[]> => {
+  const res = await callApi(`simulations/cycles/${id}`, {
+    method: "GET",
+  });
+  if (res?.Data) {
+    return res.Data;
+  }
+  return [];
+};
+
+export const getSimulationCycle = async (id: number): Promise<SimulationCycle> => {
+  return await callApi(`simulations/cycle/${id}`, {
     method: "GET",
   });
 };
