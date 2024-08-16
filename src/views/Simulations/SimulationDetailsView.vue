@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import { getEnvironment } from "@/api/environment";
+import { getSimulation, startSimulation } from "@/api/simulation";
 import BadgeGeneral from "@/components/BadgeGeneral.vue";
 import SimulationCycleCard from "@/components/simulation/SimulationCycleCard.vue";
 import SimulationEventCard from "@/components/simulation/SimulationEventCard.vue";
 import SimulationStatusToggleButton from "@/components/simulation/SimulationStatusToggleButton.vue";
+import { useToasts } from "@/composable/toasts";
 import {
   SimulationEventType,
   SimulationStatus,
@@ -10,11 +13,17 @@ import {
 } from "@/types/Simulations";
 import { SimulationBadgeType } from "@/utils";
 import { Icon } from "@iconify/vue";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, type Ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import VueApexCharts from "vue3-apexcharts";
 
+const route = useRoute();
+const { makeToast } = useToasts();
+
+const simulationDetail: Ref<SimulationWithEnvName | undefined> = ref();
+
 // IDEA: initial fetch out first, then subscribe to SSE on new cycles and new cycle events
-const simulationDetail: SimulationWithEnvName = {
+const simulationDetails: SimulationWithEnvName = {
   ID: 1,
   EnvironmentID: 1,
   EnvironmentName: "Environment Alpha",
@@ -136,8 +145,34 @@ const series = ref([
 
 const currentActiveCycle = ref(1); // ID of the active cycle
 
+const toggleSimulationStatus = async () => {
+  if (simulationDetail.value) {
+    if (SimulationStatus[simulationDetail.value.Status] === "IDLE") {
+      const res = await startSimulation(simulationDetail.value.ID);
+      if (!res) {
+        return;
+      }
+      makeToast(res.Message);
+      // maybe subscribe to the event source for stream updates
+    }
+  }
+};
+
 // TODO fetch simulation from backend
-onMounted(async () => {});
+onMounted(async () => {
+  const res = await getSimulation(parseInt(route.params?.id as string));
+  const router = useRouter();
+  if (!res) {
+    router.push({ name: "simulation-list" });
+    return;
+  }
+  const envRes = await getEnvironment(res.EnvironmentID);
+  if (!envRes) {
+    router.push({ name: "simulation-list" });
+    return;
+  }
+  simulationDetail.value = { ...res, EnvironmentName: envRes.Name };
+});
 </script>
 
 <template>
@@ -149,7 +184,7 @@ onMounted(async () => {});
         @click="$router.push({ name: 'simulation-list' })"
       >
         <Icon icon="mdi:arrow-left" class="text-[2rem]" />
-        <span class="text-xl font-medium">{{ simulationDetail.Name }} Details</span>
+        <span class="text-xl font-medium">{{ simulationDetail?.Name }} Details</span>
       </div>
       <div class="grid grid-cols-3 gap-2 items-center">
         <button class="btn shadow-common bg-neutral-400 text-white rounded-[10px] px-4 py-2">
@@ -170,28 +205,33 @@ onMounted(async () => {});
       <!-- left -->
       <div class="flex flex-col h-full">
         <div class="flex items-center gap-8">
-          <h2 class="text-3xl">{{ simulationDetail.Name }}</h2>
+          <h2 class="text-3xl">{{ simulationDetail?.Name }}</h2>
           <div class="flex items-center gap-2">
             <BadgeGeneral
               :type="
                 SimulationBadgeType[
-                  SimulationStatus[simulationDetail.Status] as keyof typeof SimulationBadgeType
+                  SimulationStatus[
+                    simulationDetail?.Status ?? 0
+                  ] as keyof typeof SimulationBadgeType
                 ]
               "
-              :text="SimulationStatus[simulationDetail.Status]"
+              :text="SimulationStatus[simulationDetail?.Status ?? 0]"
             />
-            <SimulationStatusToggleButton :current-state="simulationDetail.Status" />
+            <SimulationStatusToggleButton
+              :current-state="simulationDetail?.Status ?? 0"
+              @click="toggleSimulationStatus"
+            />
           </div>
         </div>
         <div class="flex items-center gap-6 mt-2">
           <div class="text-neutral-400 flex items-center gap-2">
             <Icon icon="ri:building-fill" />
-            <span class="text-xs font-medium"> {{ simulationDetail.EnvironmentName }} </span>
+            <span class="text-xs font-medium"> {{ simulationDetail?.EnvironmentName }} </span>
           </div>
           <div class="text-neutral-400 flex items-center gap-2">
             <Icon icon="grommet-icons:cycle" />
             <span class="text-xs font-medium">
-              {{ simulationDetail.SimulationCycles?.length ?? 0 }} Cycles
+              {{ simulationDetail?.SimulationCycles?.length ?? 0 }} Cycles
             </span>
           </div>
         </div>
@@ -204,7 +244,7 @@ onMounted(async () => {});
           <span>Cycles</span>
           <div class="flex flex-col gap-2 mt-2 h-full overflow-auto">
             <SimulationCycleCard
-              v-for="(s, i) in simulationDetail.SimulationCycles"
+              v-for="(s, i) in simulationDetail?.SimulationCycles ?? []"
               :key="s.ID"
               :index="i"
               :event-count="s.SimulationEvents?.length ?? 0"
@@ -220,8 +260,8 @@ onMounted(async () => {});
         <div class="flex flex-col gap-2 mt-2 h-full overflow-auto">
           <!-- event type of SIMULATION wouldnt get their badge -->
           <SimulationEventCard
-            v-for="e in simulationDetail.SimulationCycles.find((s) => s.ID === currentActiveCycle)
-              ?.SimulationEvents"
+            v-for="e in simulationDetail?.SimulationCycles?.find((s) => s.ID === currentActiveCycle)
+              ?.SimulationEvents ?? []"
             :key="e.ID"
             :title="e.Agent ? e.Agent.Name : 'Simulation Engine'"
             :event-detail="e.EventDescription"

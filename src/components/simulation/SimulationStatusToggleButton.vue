@@ -6,6 +6,10 @@ defineProps<{
   currentState: number; // should be convertible to SimulationStatus
 }>();
 
+defineEmits<{
+  (e: "click"): void;
+}>();
+
 // if IDLE -> show RUN state
 // if RUNNING -> show STOP state
 </script>
@@ -18,6 +22,7 @@ defineProps<{
         ? 'border-primary text-primary'
         : 'border-red-500 text-red-500',
     ]"
+    @click="$emit('click')"
   >
     <Icon
       :icon="SimulationStatus[currentState] === 'IDLE' ? 'ic:round-play-arrow' : 'ic:round-stop'"
