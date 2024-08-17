@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { RouterLink, useRouter } from "vue-router";
-import { reactive, ref, type Reactive, type Ref } from "vue";
+import { ref, type Ref } from "vue";
 import { registerBusiness } from "@/api/user";
 import { useToasts } from "@/composable/toasts";
-import type { RegisterBusinessData, RegisterBusinessDetail } from "@/types/BusinessProfile";
+import type { RegisterBusinessDetail } from "@/types/BusinessProfile";
 import type { UserAccountInfo } from "@/types/User";
 import RegisterFormAccount from "@/components/user/RegisterFormAccount.vue";
 import RegisterFormDetails from "@/components/user/RegisterFormDetails.vue";
