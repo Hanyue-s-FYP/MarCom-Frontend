@@ -79,6 +79,10 @@ export const callApi = async (
     .finally(() => setLoading(false));
 };
 
+export const isFloat = (val: string): boolean => {
+  return isNaN(parseFloat(val)) && /^\d+\.?\d*$/.test(val);
+};
+
 export const extractFloat = (val: string): number => {
-  return isNaN(parseFloat(val)) ? 0.0 : parseFloat(val);
+  return !isFloat(val) ? 0.0 : parseFloat(val);
 };

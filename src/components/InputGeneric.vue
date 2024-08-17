@@ -14,6 +14,10 @@ interface Props {
   rows?: number; // only for textarea
 }
 
+defineEmits<{
+  (e: "blur", val: unknown): void;
+}>();
+
 const props = withDefaults(defineProps<Props>(), {
   showLabel: true,
   errorMsg: "",
@@ -66,6 +70,7 @@ const isInvalid = computed(() => !!props.errorMsg);
         :class="[!isInvalid ? 'text-black' : 'text-red-500']"
         :disabled="!!disabled"
         v-if="type !== 'textarea'"
+        @blur="$emit('blur', model)"
       />
       <div
         @click="currentType = currentType === 'password' ? 'text' : 'password'"

@@ -3,7 +3,7 @@ import type { CreateProduct, EditProduct } from "@/types/Products";
 import { reactive } from "vue";
 import InputGeneric from "../InputGeneric.vue";
 import { useAuthStore } from "@/stores/auth";
-import { extractFloat } from "@/utils";
+import { extractFloat, isFloat } from "@/utils";
 
 const auth = useAuthStore();
 
@@ -28,8 +28,34 @@ const productData: CreateProduct | EditProduct = reactive(
       },
 );
 
-// TODO add validations
+const errorMsgs = reactive({
+  nameErr: "",
+  descErr: "",
+  priceErr: "",
+  costErr: "",
+});
+
+const validateForm = () => {
+  let hasError = false;
+  // check all required
+  if (productData.Name.length < 1) {
+    errorMsgs.nameErr = "Product name is required";
+    hasError = true;
+  } else {
+    errorMsgs.nameErr = "";
+  }
+
+  if (productData.Description.length < 1) {
+    errorMsgs.descErr = "Product description is required";
+    hasError = true;
+  } else {
+    errorMsgs.descErr = "";
+  }
+  return !hasError;
+};
+
 const submitForm = () => {
+  if (!validateForm()) return;
   emit("submit", productData);
 };
 </script>
@@ -41,6 +67,7 @@ const submitForm = () => {
       type="text"
       v-model="productData.Name"
       placeholder="Product 1"
+      :error-msg="errorMsgs.nameErr"
     />
     <InputGeneric
       name="Description"
@@ -48,12 +75,13 @@ const submitForm = () => {
       :rows="7"
       v-model="productData.Description"
       placeholder="Give some context about the product..."
+      :error-msg="errorMsgs.descErr"
     />
     <InputGeneric
       name="Product Selling Price"
       type="text"
-      :model-value="productData.Price"
-      @update:modelValue="(val) => (productData.Price = extractFloat(val))"
+      v-model="productData.Price"
+      @blur="(val) => (productData.Price = extractFloat(val as string))"
       placeholder="123"
     >
       <template #prepend>
@@ -63,8 +91,8 @@ const submitForm = () => {
     <InputGeneric
       name="Product Cost"
       type="text"
-      :model-value="productData.Cost"
-      @update:modelValue="(val) => (productData.Cost = extractFloat(val))"
+      v-model="productData.Cost"
+      @blur="(val) => (productData.Cost = extractFloat(val as string))"
       placeholder="123"
     >
       <template #prepend>
