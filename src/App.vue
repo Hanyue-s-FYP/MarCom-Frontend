@@ -1,15 +1,28 @@
 <script setup lang="ts">
 import { Icon } from "@iconify/vue";
-import { RouterView, RouterLink, useRoute } from "vue-router";
+import { RouterView, RouterLink, useRoute, useRouter } from "vue-router";
 import ToastContainer from "@/components/Toast/ToastContainer.vue";
 import { useToasts } from "@/composable/toasts";
 import { useAuthStore } from "@/stores/auth";
 import LoaderSrc from "@/assets/loader.svg";
 import { useLoading } from "@/composable/loader";
+import ConfirmModal from "./components/ConfirmModal.vue";
+import { ref, type Ref } from "vue";
 
 const auth = useAuthStore();
+const router = useRouter();
 const { toasts, removeToast } = useToasts();
 const { isLoading } = useLoading();
+
+const confirmModal: Ref<typeof ConfirmModal | null> = ref(null);
+const logoutConfirm = () => {
+  confirmModal.value?.showConfirm();
+};
+
+const logout = () => {
+  auth.logout();
+  router.push({ name: "login", replace: true });
+};
 
 const isLoginOrRegister = () => {
   const route = useRoute();
@@ -48,17 +61,7 @@ const isLoginOrRegister = () => {
         Simulations
       </RouterLink>
     </nav>
-    <button
-      class="btn-primary justify-self-end m-4"
-      @click="
-        () => {
-          auth.logout();
-          $router.push({ name: 'login', replace: true });
-        }
-      "
-    >
-      Log Out
-    </button>
+    <button class="btn-primary justify-self-end m-4" @click="logoutConfirm">Log Out</button>
   </div>
   <div class="w-full flex flex-col gap-4 h-full max-h-full overflow-auto">
     <header
@@ -72,6 +75,7 @@ const isLoginOrRegister = () => {
     </main>
   </div>
 
+  <ConfirmModal ref="confirmModal" content="Are your sure you want to log out?" @confirm="logout" />
   <Teleport to="body">
     <ToastContainer :toasts="toasts" :remove-toast="removeToast" />
     <div class="loader" v-if="isLoading">

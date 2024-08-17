@@ -56,9 +56,13 @@ export const checkUserWithUsername = async (username: string): Promise<boolean> 
 };
 
 export const getBusiness = async (id: number): Promise<BusinessPublicProfile> => {
-  return await callApi(`business/${id}`, {
+  const res = await callApi(`business/${id}`, {
     method: "GET",
   });
+  if (res) {
+    return { DisplayName: res.User.DisplayName, ...res };
+  }
+  return res;
 };
 
 export type UpdateBusinessData = Omit<BusinessPublicProfile, "BusinessType" | "DisplayName"> & {

@@ -162,7 +162,7 @@ router.beforeEach(async (to) => {
   // if already logged in cannot access login and register routes
   if (to.meta?.noAccessWhenLoggedIn) {
     if (auth.isLoggedIn) {
-      return { name: "dashboard", replace: true };
+      return { name: "dashboard-data", replace: true };
     }
   }
 });

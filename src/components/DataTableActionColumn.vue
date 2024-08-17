@@ -4,6 +4,7 @@ import { Icon } from "@iconify/vue";
 const props = defineProps(["params"]);
 
 const deleteData = () => {
+  props.params.getValue().showModal(props.params.data.ID);
   console.log(props.params.data, props.params.getValue());
 };
 </script>
