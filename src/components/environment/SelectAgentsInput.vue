@@ -7,6 +7,8 @@ import { getAgents } from "@/api/agent";
 import { useAuthStore } from "@/stores/auth";
 
 const model = defineModel<GetAgent[]>({ default: [] });
+defineProps<{ errorMsg?: string }>();
+defineEmits<{ (e: "added"): void }>(); // use to tell parent agent added, can remove the error msg d
 const auth = useAuthStore();
 
 const agents: Ref<GetAgent[]> = ref([]);
@@ -29,7 +31,10 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="shadow-common border border-neutral-400 p-2 rounded-[15px]">
+  <div
+    class="shadow-common border border-neutral-400 p-2 rounded-[15px]"
+    :class="{ 'border-red-500': errorMsg }"
+  >
     <div class="mb-2">
       <div
         class="bg-neutral-400 bg-opacity-40 rounded-[15px] flex items-center justify-center font-bold min-h-[69px]"
@@ -69,7 +74,15 @@ onMounted(async () => {
           :key="agent.ID"
         >
           <span>{{ agent.Name }}</span>
-          <button class="btn-primary p-0 px-6 py-1.5 rounded-[12px]" @click="model.push(agent)">
+          <button
+            class="btn-primary p-0 px-6 py-1.5 rounded-[12px]"
+            @click="
+              () => {
+                $emit('added');
+                model.push(agent);
+              }
+            "
+          >
             Add
           </button>
         </div>
@@ -93,5 +106,23 @@ onMounted(async () => {
         </RouterLink>
       </div>
     </div>
+    <Transition>
+      <span v-if="errorMsg" class="mt-2 block text-red-500 text-sm">{{ errorMsg }}</span>
+    </Transition>
   </div>
 </template>
+
+<style scoped>
+.v-enter-from,
+.v-leave-to {
+  transform: translateY(-5px);
+  opacity: 0;
+}
+
+.v-enter-active,
+.v-leave-active {
+  transition:
+    all 0.3s ease-in-out,
+    opacity 0.2s ease-in-out;
+}
+</style>

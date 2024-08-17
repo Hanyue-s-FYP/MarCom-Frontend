@@ -15,7 +15,7 @@ const createEnvironment = async (data: CreateEnvironment) => {
   console.log(res);
   if (res) {
     makeToast(res.Message);
-    // router.push({ name: "environment-list" });
+    router.push({ name: "environment-list" });
   }
 };
 </script>

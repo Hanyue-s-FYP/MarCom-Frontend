@@ -13,7 +13,6 @@ const { makeToast } = useToasts();
 
 const environmentData: Ref<EditEnvironment | undefined> = ref();
 
-// TODO save to backend
 const editEnvironment = async (data: EditEnvironment) => {
   console.log(data);
   const res = await updateEnvironment(data);

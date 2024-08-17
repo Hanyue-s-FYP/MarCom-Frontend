@@ -53,7 +53,7 @@ const isInvalid = computed(() => !!props.errorMsg);
       <textarea
         :id="toCamelCase(name)"
         :placeholder="placeholder"
-        v-model="model"
+        v-model="model as string"
         class="w-full outline-none"
         :class="[!isInvalid ? 'text-black' : 'text-red-500']"
         :disabled="!!disabled"
@@ -101,6 +101,6 @@ const isInvalid = computed(() => !!props.errorMsg);
 .v-leave-active {
   transition:
     all 0.3s ease-in-out,
-    opacity 0.5s ease-in-out;
+    opacity 0.2s ease-in-out;
 }
 </style>

@@ -3,8 +3,27 @@ import { onMounted, ref, type Ref } from "vue";
 import { AgGridVue } from "ag-grid-vue3";
 import DataTableActionColumn from "@/components/DataTableActionColumn.vue";
 import type { EnvironmentListData } from "@/types/Environments";
-import { getEnvironmentTable } from "@/api/environment";
+import { deleteEnvironment, getEnvironmentTable } from "@/api/environment";
 import { useAuthStore } from "@/stores/auth";
+import { useToasts } from "@/composable/toasts";
+import ConfirmModal from "@/components/ConfirmModal.vue";
+
+const { makeToast } = useToasts();
+const confirmModal: Ref<typeof ConfirmModal | null> = ref(null);
+
+const envToDelete = ref(-1);
+const deleteEnvConfirm = (id: number) => {
+  confirmModal.value?.showConfirm();
+  envToDelete.value = id;
+};
+const deleteEnv = async () => {
+  if (envToDelete.value === -1) return;
+  const res = await deleteEnvironment(envToDelete.value);
+  if (res) {
+    makeToast(res.Message);
+    await fetchEnvironments();
+  }
+};
 
 // ag-grid doesnt seem to have good ts support
 const columns = [
@@ -22,15 +41,19 @@ const columns = [
     field: "actions",
     headerName: "Actions",
     cellRenderer: DataTableActionColumn,
-    valueGetter: (p: any) => ({ ...p?.data, in: "environment" }), // Using "environment" to indicate context
+    valueGetter: (p: any) => ({ ...p?.data, in: "environment", showModal: deleteEnvConfirm }), // Using "environment" to indicate context
   },
 ];
 
 const items: Ref<EnvironmentListData[]> = ref([]);
-onMounted(async () => {
+const fetchEnvironments = async () => {
   const res = await getEnvironmentTable(useAuthStore().userData?.RoleID ?? 0);
   console.log(res);
   items.value = res;
+};
+
+onMounted(async () => {
+  await fetchEnvironments();
 });
 </script>
 
@@ -56,6 +79,12 @@ onMounted(async () => {
       "
       pagination
       class="h-full w-full ag-theme-quartz"
+    />
+    <ConfirmModal
+      ref="confirmModal"
+      @confirm="deleteEnv"
+      @cancel="envToDelete = -1"
+      content="Deleting this environment will delete everything associated to it"
     />
   </div>
 </template>
