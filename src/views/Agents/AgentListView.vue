@@ -81,6 +81,11 @@ onMounted(async () => {
       pagination
       class="h-full w-full ag-theme-quartz"
     />
-    <ConfirmModal ref="confirmModal" @confirm="deleteAgent" @cancel="agentToDelete = -1" />
+    <ConfirmModal
+      ref="confirmModal"
+      @confirm="deleteAgent"
+      @cancel="agentToDelete = -1"
+      content="Deleting this agent will delete everything associated to it"
+    />
   </div>
 </template>
