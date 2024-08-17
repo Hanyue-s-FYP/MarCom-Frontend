@@ -46,7 +46,9 @@ const chartOptions = computed(() => ({
   },
   xaxis: {
     // first cycle has ntg to do with agent actions
-    categories: simulationDetail.value?.SimulationCycles?.slice(1)?.map((c) => c.CycleNumber) ?? [],
+    categories:
+      simulationDetail.value?.SimulationCycles?.slice(1)?.map((c) => `Cycle ${c.CycleNumber}`) ??
+      [],
   },
 }));
 
@@ -91,6 +93,13 @@ const toggleSimulationStatus = async () => {
         return;
       }
       makeToast(res.Message);
+      // refetch simulation and update simulation status
+      const sim = await getSimulation(simulationDetail.value.ID);
+      if (!sim) {
+        return;
+      }
+      simulationDetail.value.Status = sim.Status;
+
       // possible got stuffs already happen before event source start listening, fetch all the events and cycles out first
       updateSimulationCycles(simulationDetail.value.ID);
 
@@ -189,10 +198,14 @@ const updateSimulationCycles = async (id: number) => {
     );
     simulationDetail.value.SimulationCycles = cycleRes;
     series.value = updateSeries();
+    // always focus on the last cycle
+    currentActiveCycle.value =
+      simulationDetail.value.SimulationCycles[
+        simulationDetail.value.SimulationCycles.length - 1
+      ].ID;
   }
 };
 
-// TODO fetch simulation from backend
 onMounted(async () => {
   const id = parseInt(route.params?.id as string);
   const res = await getSimulation(id);
@@ -300,7 +313,13 @@ onMounted(async () => {
       </div>
       <!-- right -->
       <div class="w-full flex-grow h-full border border-neutral-400 rounded-[15px] p-2">
-        <span>Cycle Events - Cycle {{ currentActiveCycle }}</span>
+        <span
+          >Cycle Events - Cycle
+          {{
+            simulationDetail?.SimulationCycles?.find((s) => s.ID === currentActiveCycle)
+              ?.CycleNumber
+          }}</span
+        >
         <div class="flex flex-col gap-2 mt-2 h-full overflow-auto">
           <!-- event type of SIMULATION wouldnt get their badge -->
           <SimulationEventCard
