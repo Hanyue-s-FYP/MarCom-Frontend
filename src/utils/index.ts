@@ -1,7 +1,6 @@
 import { useLoading } from "@/composable/loader";
 import { useToasts } from "@/composable/toasts";
 import { useAuthStore } from "@/stores/auth";
-import { BadgeType } from "@/types/Badge";
 import { ToastType } from "@/types/Toasts";
 import axios, { type AxiosRequestConfig } from "axios";
 
