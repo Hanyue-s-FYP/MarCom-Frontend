@@ -1,21 +1,27 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { toCamelCase } from "@/utils";
 import { Icon } from "@iconify/vue/dist/iconify.js";
 
 interface Props {
   type: string;
   name: string;
+  errorMsg: string;
   placeholder?: string;
   showLabel?: boolean;
   disabled?: boolean;
-  isInvalid?: boolean;
+  showErrMsg?: boolean;
   rows?: number; // only for textarea
 }
 
-const props = withDefaults(defineProps<Props>(), { showLabel: true });
+const props = withDefaults(defineProps<Props>(), {
+  showLabel: true,
+  errorMsg: "",
+  showErrMsg: true,
+});
 const model = defineModel(); // vue 3.4 SAIKOOOO things aren't this easy previously
 const currentType = ref(props.type);
+const isInvalid = computed(() => !!props.errorMsg);
 </script>
 
 <template>
@@ -72,5 +78,23 @@ const currentType = ref(props.type);
         />
       </div>
     </div>
+    <Transition>
+      <span v-if="isInvalid && showErrMsg" class="text-red-500 text-sm">{{ errorMsg }}</span>
+    </Transition>
   </div>
 </template>
+
+<style scoped>
+.v-enter-from,
+.v-leave-to {
+  transform: translateY(-5px);
+  opacity: 0;
+}
+
+.v-enter-active,
+.v-leave-active {
+  transition:
+    all 0.3s ease-in-out,
+    opacity 0.5s ease-in-out;
+}
+</style>
