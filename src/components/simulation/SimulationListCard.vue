@@ -5,6 +5,7 @@ import BadgeGeneral from "../BadgeGeneral.vue";
 import { SimulationBadgeType } from "@/utils/simulations";
 
 defineProps<SimulationWithEnvName>();
+defineEmits<{ (e: "delete", id: number): void }>();
 </script>
 
 <template>
@@ -12,7 +13,10 @@ defineProps<SimulationWithEnvName>();
     class="border border-neutral-400 rounded-[12px] p-2 hover:border-primary hover:cursor-pointer hover:text-primary"
     @click="$router.push({ name: 'simulation-detail', params: { id: ID } })"
   >
-    <div class="flex justify-between items-center mb-2">
+    <div
+      class="flex justify-between items-center mb-2 cursor-pointer"
+      @click.stop="$emit('delete', ID)"
+    >
       <span class="font-bold">{{ Name }}</span>
       <Icon icon="mdi:delete" class="text-red-500" />
     </div>
