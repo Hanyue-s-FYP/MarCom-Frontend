@@ -200,9 +200,8 @@ const updateSimulationCycles = async (id: number) => {
     series.value = updateSeries();
     // always focus on the last cycle
     currentActiveCycle.value =
-      simulationDetail.value.SimulationCycles[
-        simulationDetail.value.SimulationCycles.length - 1
-      ].ID;
+      simulationDetail.value.SimulationCycles[simulationDetail.value.SimulationCycles.length - 1]
+        ?.ID ?? -1;
   }
 };
 
