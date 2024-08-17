@@ -22,7 +22,7 @@ import {
   type SimulationEventDetail,
 } from "@/utils/simulations";
 import { Icon } from "@iconify/vue";
-import { onMounted, ref, type Ref } from "vue";
+import { computed, onMounted, ref, type Ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import VueApexCharts from "vue3-apexcharts";
 import { EventSource } from "extended-eventsource";
@@ -40,24 +40,46 @@ const envDetail: Ref<EnvironmentListData | undefined> = ref();
 const simulationDetail: Ref<SimulationWithEnvName | undefined> = ref();
 
 // le chart stuff (maybe migrate into own component)
-const chartOptions = {
+const chartOptions = computed(() => ({
   chart: {
     id: "simulation-cycle-details",
   },
   xaxis: {
-    categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998],
+    // first cycle has ntg to do with agent actions
+    categories: simulationDetail.value?.SimulationCycles?.slice(1)?.map((c) => c.CycleNumber) ?? [],
   },
+}));
+
+const updateSeries = () => {
+  return (
+    envDetail.value?.Products?.map((p) => {
+      return {
+        name: p.Name,
+        // get profit of every cycle (profit defined as Price for each product bought)
+        data:
+          simulationDetail.value?.SimulationCycles?.slice(1)?.map((c) => {
+            // reduce all the events such that for events that have a product, it should be BUY, and then can reduce how many agents bought that product
+            return (
+              c.SimulationEvents?.reduce((acc, e) => {
+                const prod = (e as SimulationEventDetail).Product;
+                if (prod && prod.ID === p.ID) {
+                  return acc + prod.Price;
+                }
+                return acc;
+              }, 0) ?? 0
+            );
+          }) ?? [],
+      };
+    }) ?? []
+  );
 };
-const series = ref([
+
+const series: Ref<
   {
-    name: "Product 1",
-    data: [30, 40, 35, 50, 49, 60, 70],
-  },
-  {
-    name: "Product 2",
-    data: [30, 40, 35, 50, 49, 60, 70, 0],
-  },
-]);
+    name: string;
+    data: number[];
+  }[]
+> = ref([]);
 
 const currentActiveCycle = ref(1); // ID of the active cycle
 
@@ -140,6 +162,7 @@ const makeListenerForUpdate = (id: number) => {
           }
         }
       }
+      series.value = updateSeries();
     }
   });
   simulationUpdateEventSource.addEventListener("simulation-complete", (event) => {
@@ -165,6 +188,7 @@ const updateSimulationCycles = async (id: number) => {
         )),
     );
     simulationDetail.value.SimulationCycles = cycleRes;
+    series.value = updateSeries();
   }
 };
 
@@ -183,8 +207,10 @@ onMounted(async () => {
     return;
   }
   simulationDetail.value = { ...res, EnvironmentName: envRes.Name };
+  envDetail.value = envRes;
 
-  updateSimulationCycles(id);
+  await updateSimulationCycles(id);
+  console.log(simulationDetail.value.SimulationCycles);
 
   // can return early if is not running (so only make listener when it is running)
   if (SimulationStatus[res.Status] !== "RUNNING") return;
