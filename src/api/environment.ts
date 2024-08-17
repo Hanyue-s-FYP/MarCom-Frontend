@@ -45,3 +45,7 @@ export const updateEnvironment = async (data: EditEnvironment): Promise<GeneralR
     data,
   });
 };
+
+export const deleteEnvironment = async (id: number): Promise<GeneralResponse> => {
+  return await callApi(`environments/${id}`, { method: "DELETE" });
+};

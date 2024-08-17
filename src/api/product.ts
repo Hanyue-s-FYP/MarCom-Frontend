@@ -62,3 +62,7 @@ export const updateProduct = async (data: EditProduct): Promise<GeneralResponse>
     data,
   });
 };
+
+export const deleteProduct = async (id: number): Promise<GeneralResponse> => {
+  return await callApi(`products/${id}`, { method: "DELETE" });
+};

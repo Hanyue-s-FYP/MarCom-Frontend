@@ -62,3 +62,7 @@ export const updateAgent = async (data: EditAgent): Promise<GeneralResponse> => 
     data,
   });
 };
+
+export const deleteAgent = async (id: number): Promise<GeneralResponse> => {
+  return await callApi(`agents/${id}`, { method: "DELETE" });
+};

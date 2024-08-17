@@ -54,6 +54,10 @@ export const updateSimulation = async (data: EditSimulation): Promise<GeneralRes
   });
 };
 
+export const deleteSimulation = async (id: number): Promise<GeneralResponse> => {
+  return await callApi(`simulations/${id}`, { method: "DELETE" });
+};
+
 export const startSimulation = async (id: number): Promise<GeneralResponse> => {
   return await callApi(`simulations/start/${id}`, {
     method: "GET",
