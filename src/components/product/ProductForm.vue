@@ -3,7 +3,7 @@ import type { CreateProduct, EditProduct } from "@/types/Products";
 import { reactive } from "vue";
 import InputGeneric from "../InputGeneric.vue";
 import { useAuthStore } from "@/stores/auth";
-import { extractFloat, isFloat } from "@/utils";
+import { extractFloat } from "@/utils";
 
 const auth = useAuthStore();
 
