@@ -11,10 +11,8 @@ const route = useRoute();
 const router = useRouter();
 const { makeToast } = useToasts();
 
-// TODO fetch from backend based on id on mounted
 const agentData: Ref<EditAgent | undefined> = ref();
 
-// TODO save to backend
 const editAgent = async (data: EditAgent) => {
   console.log(data);
   const res = await updateAgent(data);

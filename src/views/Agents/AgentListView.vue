@@ -5,8 +5,27 @@ import DataTableActionColumn from "@/components/DataTableActionColumn.vue";
 import type { AgentWithSimulation } from "@/types/Agents";
 import { getAgentTableByBusinessID } from "@/api/agent";
 import { useAuthStore } from "@/stores/auth";
+import { deleteAgent as deleteAgentAPI } from "@/api/agent";
+import { useToasts } from "@/composable/toasts";
+import ConfirmModal from "@/components/ConfirmModal.vue";
 
 const auth = useAuthStore();
+const { makeToast } = useToasts();
+const confirmModal: Ref<typeof ConfirmModal | null> = ref(null);
+
+const agentToDelete = ref(-1);
+const deleteAgentConfirm = (id: number) => {
+  confirmModal.value?.showConfirm();
+  agentToDelete.value = id;
+};
+const deleteAgent = async () => {
+  if (agentToDelete.value === -1) return;
+  const res = await deleteAgentAPI(agentToDelete.value);
+  if (res) {
+    makeToast(res.Message);
+    await fetchAgents();
+  }
+};
 
 // ag-grid doesnt seem to have good ts support
 const columns = [
@@ -20,18 +39,22 @@ const columns = [
   {
     field: "actions",
     cellRenderer: DataTableActionColumn,
-    valueGetter: (p: any) => ({ ...p.data, in: "agents" }), // append in so the custom component rendered by the cellRenderer can know where the delete button is clicked, no other way since cannot use slot and cannot pass own props
+    valueGetter: (p: any) => ({ ...p.data, in: "agents", showModal: deleteAgentConfirm }), // append in so the custom component rendered by the cellRenderer can know where the delete button is clicked, no other way since cannot use slot and cannot pass own props
   },
 ];
 
 const items: Ref<AgentWithSimulation[]> = ref([]);
 
-onMounted(async () => {
+const fetchAgents = async () => {
   const res = await getAgentTableByBusinessID(auth.userData?.RoleID ?? 0);
   console.log(res);
   if (res) {
     items.value = res;
   }
+};
+
+onMounted(async () => {
+  await fetchAgents();
 });
 </script>
 
@@ -58,5 +81,6 @@ onMounted(async () => {
       pagination
       class="h-full w-full ag-theme-quartz"
     />
+    <ConfirmModal ref="confirmModal" @confirm="deleteAgent" @cancel="agentToDelete = -1" />
   </div>
 </template>

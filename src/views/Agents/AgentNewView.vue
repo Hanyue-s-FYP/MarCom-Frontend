@@ -9,13 +9,12 @@ import { useToasts } from "@/composable/toasts";
 const router = useRouter();
 const { makeToast } = useToasts();
 
-// TODO save to backend
 const createNewAgent = async (data: CreateAgent) => {
   console.log(data);
   const res = await createAgent(data);
   if (res) {
     makeToast(res.Message);
-    // router.push({ name: "agent-list" });
+    router.push({ name: "agent-list" });
   }
 };
 </script>

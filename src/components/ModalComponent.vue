@@ -7,7 +7,7 @@ defineProps<{ isOpen: boolean }>();
     <Transition :duration="350">
       <div class="overlay" v-if="isOpen">
         <div
-          class="w-[50%] min-w-96 bg-surface shadow-[10px_10px_80px_0px_hsl(285_8_50_/_0.6)] rounded-[15px] modal"
+          class="w-[50%] max-w-96 min-w-96 bg-surface shadow-[10px_10px_80px_0px_hsl(285_8_50_/_0.6)] rounded-[15px] modal"
         >
           <slot />
         </div>
