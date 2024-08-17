@@ -6,7 +6,7 @@ import { Icon } from "@iconify/vue/dist/iconify.js";
 interface Props {
   type: string;
   name: string;
-  errorMsg: string;
+  errorMsg?: string;
   placeholder?: string;
   showLabel?: boolean;
   disabled?: boolean;
@@ -75,6 +75,7 @@ const isInvalid = computed(() => !!props.errorMsg);
         <Icon
           :icon="currentType === 'password' ? 'ph:eye' : 'ph:eye-closed'"
           v-if="type === 'password'"
+          class="text-inherit"
         />
       </div>
     </div>

@@ -1,4 +1,4 @@
-import type { User } from "./User";
+import type { User, UserDetail } from "./User";
 
 export interface BusinessPublicProfile {
   DisplayName: string;
@@ -6,6 +6,8 @@ export interface BusinessPublicProfile {
   Description: string;
   CoverImgPath?: File | string;
 }
+
+export type RegisterBusinessDetail = UserDetail & BusinessPublicProfile;
 
 export type RegisterBusinessData = User &
   Omit<BusinessPublicProfile, "CoverPic"> & { CoverImgPath: string };

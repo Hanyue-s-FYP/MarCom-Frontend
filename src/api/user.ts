@@ -13,14 +13,14 @@ export interface LoginFields {
 type LoginResponse = GeneralResponse & { Token: string };
 
 export const loginUser = async (data: LoginFields): Promise<LoginResponse> => {
-  return await callApi("/login", {
+  return await callApi("login", {
     method: "POST",
     data,
   });
 };
 
 export const registerBusiness = async (data: RegisterBusinessData): Promise<GeneralResponse> => {
-  return await callApi("/register-business", {
+  return await callApi("register-business", {
     method: "POST",
     data: {
       ...data,
@@ -32,7 +32,7 @@ export const registerBusiness = async (data: RegisterBusinessData): Promise<Gene
 
 export const getMe = async (): Promise<GetUser> => {
   return await callApi(
-    "/get-me",
+    "get-me",
     {
       method: "GET",
     },
@@ -47,8 +47,16 @@ export const getMe = async (): Promise<GetUser> => {
   );
 };
 
+export const checkUserWithUsername = async (username: string): Promise<boolean> => {
+  const user = await callApi(`check-username/${username}`, { method: "GET" });
+  if (user) {
+    return true;
+  }
+  return false;
+};
+
 export const getBusiness = async (id: number): Promise<BusinessPublicProfile> => {
-  return await callApi(`/business/${id}`, {
+  return await callApi(`business/${id}`, {
     method: "GET",
   });
 };
@@ -63,7 +71,7 @@ export const updateBusiness = async (data: UpdateBusinessData): Promise<GeneralR
   const { NewCoverImg, ...left } = data; // extract out the new cover img
   Object.keys(left).forEach((k) => formData.append(k, left[k as keyof typeof left] as string));
   if (NewCoverImg) formData.append("NewCoverImg", NewCoverImg); // push the img if any
-  return await callApi("/business", {
+  return await callApi("business", {
     method: "PUT",
     data: formData,
   });

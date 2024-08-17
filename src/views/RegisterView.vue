@@ -1,37 +1,67 @@
 <script setup lang="ts">
 import { RouterLink, useRouter } from "vue-router";
-import InputGeneric from "@/components/InputGeneric.vue";
-import { computed, reactive, type Reactive } from "vue";
-import { registerBusiness, type RegisterBusinessData } from "@/api/user";
+import { reactive, ref, type Reactive, type Ref } from "vue";
+import { registerBusiness } from "@/api/user";
 import { useToasts } from "@/composable/toasts";
+import type { RegisterBusinessData, RegisterBusinessDetail } from "@/types/BusinessProfile";
+import type { UserAccountInfo } from "@/types/User";
+import RegisterFormAccount from "@/components/user/RegisterFormAccount.vue";
+import RegisterFormDetails from "@/components/user/RegisterFormDetails.vue";
 
 const { makeToast } = useToasts();
 const router = useRouter();
 
-const registerData: Reactive<RegisterBusinessData & { ConfirmPassword: string }> = reactive({
-  Username: "",
-  Password: "",
-  ConfirmPassword: "",
-  Email: "",
-  PhoneNumber: "",
-  DisplayName: "",
-  Status: 1,
-  Description: "",
-  BusinessType: "",
-  CoverImgPath: "",
-});
+const registerFormData: Ref<
+  ((UserAccountInfo & { ConfirmPassword: string }) | RegisterBusinessDetail)[]
+> = ref([
+  {
+    Username: "",
+    Password: "",
+    ConfirmPassword: "",
+  },
+  {
+    Email: "",
+    PhoneNumber: "",
+    DisplayName: "",
+    Status: 1,
+    Description: "",
+    BusinessType: "",
+    CoverImgPath: "",
+  },
+]);
 
-const isPasswordMatch = computed(() => registerData.Password === registerData.ConfirmPassword);
+const currentForm: Ref<typeof RegisterFormAccount | typeof RegisterFormDetails | null> = ref(null);
+const currentFormIndex = ref(0);
+const registerForms = [RegisterFormAccount, RegisterFormDetails];
+const transitionName = ref("next");
+const previousForm = () => {
+  if (currentFormIndex.value === 1) {
+    currentFormIndex.value = 0;
+    transitionName.value = "back";
+  }
+};
 
-const validateForm = () => {
-  return isPasswordMatch.value;
+const validateForm = async () => {
+  console.log(currentForm.value);
+  return await currentForm.value!!.validateForm();
 };
 
 const register = async () => {
-  if (!validateForm()) return;
+  const formValid = await validateForm();
+  console.log(formValid);
+  if (!formValid) return;
+  if (currentFormIndex.value === 0) {
+    currentFormIndex.value = 1;
+    transitionName.value = "next";
+    return;
+  }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { ConfirmPassword: _, ...data } = registerData;
-  const res = await registerBusiness(data);
+  const { ConfirmPassword: _, ...data } = registerFormData.value[0] as UserAccountInfo & {
+    ConfirmPassword: string;
+  };
+  const { CoverImgPath, ...rest } = registerFormData.value[1] as RegisterBusinessDetail;
+  const registerData = { ...data, ...rest, CoverImgPath: CoverImgPath as string };
+  const res = await registerBusiness(registerData);
   if (res) {
     makeToast(res.Message);
     router.replace("/login");
@@ -45,50 +75,23 @@ const register = async () => {
       class="shadow-common bg-white py-6 px-8 flex flex-col gap-4 items-center w-[50%] max-w-96 rounded-[15px]"
       @submit.prevent="register"
     >
-      <h1 class="text-center font-bold text-2xl w-full">Register</h1>
-      <InputGeneric
-        name="Username"
-        type="text"
-        placeholder="meow123"
-        v-model="registerData.Username"
-      />
-      <InputGeneric
-        name="Display Name"
-        type="text"
-        placeholder="Meow Sdn Bhd."
-        v-model="registerData.DisplayName"
-      />
-      <InputGeneric
-        name="Password"
-        type="password"
-        placeholder="*******"
-        v-model="registerData.Password"
-      />
-      <InputGeneric
-        name="Confirm Password"
-        type="password"
-        placeholder="*******"
-        v-model="registerData.ConfirmPassword"
-      />
-      <InputGeneric
-        name="Email"
-        type="text"
-        placeholder="hello@example.com"
-        v-model="registerData.Email"
-      />
-      <InputGeneric
-        name="Contact Number"
-        type="text"
-        placeholder="0123456789"
-        v-model="registerData.PhoneNumber"
-      />
-      <InputGeneric
-        name="Business Type"
-        type="text"
-        placeholder="Education"
-        v-model="registerData.BusinessType"
-      />
-      <button class="btn-primary w-full">Register</button>
+      <!-- I know for sure it wont be mismatched type, but doesn't have a way to assert ts yet -->
+      <!-- @vue-skip -->
+      <Transition :name="transitionName" mode="out-in">
+        <component
+          :is="registerForms[currentFormIndex]"
+          v-model="registerFormData[currentFormIndex]"
+          ref="currentForm"
+        />
+      </Transition>
+      <button
+        class="btn bg-neutral-400 text-white w-full"
+        @click.prevent="previousForm"
+        v-if="currentFormIndex === 1"
+      >
+        Back
+      </button>
+      <button class="btn-primary w-full">{{ currentFormIndex === 1 ? "Register" : "Next" }}</button>
       <div>
         Already have an account?
         <RouterLink to="/login" class="cursor-pointer text-primary">Log In</RouterLink>
@@ -96,3 +99,32 @@ const register = async () => {
     </form>
   </div>
 </template>
+
+<style scoped>
+.next-enter-active,
+.next-leave-active,
+.back-enter-active,
+.back-leave-active {
+  transition: all 0.25s ease-out;
+}
+
+.next-enter-from {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+.next-leave-to {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+.back-enter-from {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+.back-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+</style>
