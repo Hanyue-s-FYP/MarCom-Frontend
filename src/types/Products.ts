@@ -13,3 +13,5 @@ export type EditProduct = CreateProduct & { ID: number };
 export type GetProduct = EditProduct & { Report: string };
 
 export type ProductTableData = GetProduct & { InEnvironments: SimplifiedEnvironment[] };
+
+export type DashboardProduct = GetProduct & { InEnvironments: number };

@@ -17,3 +17,5 @@ export interface SimplifiedEnvironment {
   Name: string;
   SimulatedCount: number;
 }
+
+export type DashboardEnvironment = EnvironmentListData & { SimulatedCount: number };

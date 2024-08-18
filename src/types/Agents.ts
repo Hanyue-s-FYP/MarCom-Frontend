@@ -14,3 +14,5 @@ export type GetAgent = EditAgent;
 export type AgentWithSimulation = GetAgent & {
   InEnvironments: SimplifiedEnvironment[];
 };
+
+export type DashboardAgent = GetAgent & { InEnvironment: number };
