@@ -21,7 +21,7 @@ onMounted(async () => {
       <span class="text-xl font-medium">Top Used Agents</span>
       <RouterLink to="/agents" class="text-primary cursor-pointer">View All</RouterLink>
     </div>
-    <div class="grid grid-cols-2 grid-rows-2 gap-2">
+    <div class="grid grid-cols-2 grid-rows-2 gap-2" v-if="dashboardAgents?.length">
       <DashboardUsedItemCardSimple
         v-for="a in dashboardAgents"
         :key="a.ID"
@@ -29,6 +29,13 @@ onMounted(async () => {
         :in-environment-count="a.InEnvironment"
         :redirect-location="{ name: 'agent-detail', params: { id: a.ID || 0 } }"
       />
+    </div>
+    <div
+      class="mt-2 flex flex-col items-center justify-center min-h-28 bg-neutral-400 bg-opacity-40 rounded-[15px]"
+      v-else
+    >
+      <span class="font-bold"> No Agents Yet </span>
+      <RouterLink :to="{ name: 'new-agent' }" class="text-primary"> Create One </RouterLink>
     </div>
   </div>
 </template>

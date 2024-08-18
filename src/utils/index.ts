@@ -57,6 +57,7 @@ export const callApi = async (
           auth.logout();
           makeToast("Login session expired, please login again");
         }
+        localStorage.removeItem("userToken"); // attempt to remove token anyways
         return;
       }
 

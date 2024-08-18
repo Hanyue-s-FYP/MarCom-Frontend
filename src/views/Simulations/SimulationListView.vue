@@ -52,13 +52,19 @@ onMounted(async () => {
         New Simulation
       </button>
     </div>
-    <div class="grid grid-cols-3 gap-2">
+    <div class="grid grid-cols-3 gap-2" v-if="simulations?.length">
       <SimulationListCard
         v-for="s in simulations"
         :key="s.ID"
         v-bind="s"
         @delete="deleteSimConfirm"
       />
+    </div>
+    <div
+      class="flex flex-col items-center justify-center h-full bg-neutral-400 bg-opacity-20 rounded-[15px]"
+      v-else
+    >
+      <span class="font-bold text-2xl"> No Simulations Yet </span>
     </div>
     <ConfirmModal
       ref="confirmModal"

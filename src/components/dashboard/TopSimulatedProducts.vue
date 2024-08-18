@@ -35,7 +35,6 @@ onMounted(async () => {
       v-else
     >
       <span class="font-bold"> No Products Yet </span>
-      <!-- Only show create if not search -->
       <RouterLink :to="{ name: 'new-product' }" class="text-primary"> Create One </RouterLink>
     </div>
   </div>
