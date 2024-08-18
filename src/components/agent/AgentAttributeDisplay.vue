@@ -19,6 +19,7 @@ defineEmits<{
 <template>
   <div
     class="shadow-common border rounded-[15px] border-neutral-400 min-h-28 flex flex-col gap-2 p-2 pl-4"
+    v-if="agentAttributes.length"
   >
     <div
       class="grid items-center"
@@ -37,5 +38,11 @@ defineEmits<{
         Delete
       </button>
     </div>
+  </div>
+  <div
+    class="shadow-common border rounded-[15px] border-neutral-400 min-h-28 flex flex-col items-center justify-center gap-2 p-2 pl-4"
+    v-else
+  >
+    <h2 class="text-xl">No Agent Attributes Yet</h2>
   </div>
 </template>
