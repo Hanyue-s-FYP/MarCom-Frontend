@@ -23,7 +23,7 @@ defineProps<Props>();
       }
     "
   >
-    <p class="flex-grow">{{ envName }}</p>
+    <p class="flex-grow card-title">{{ envName }}</p>
     <p class="text-inherit text-xs font-medium line-clamp-3 overflow-ellipsis flex-grow">
       {{ envDesc }}
     </p>
@@ -45,6 +45,10 @@ defineProps<Props>();
 <style scoped>
 .card {
   @apply text-neutral-400;
+}
+
+.card .card-title {
+  @apply text-black;
 }
 
 .card:hover,
