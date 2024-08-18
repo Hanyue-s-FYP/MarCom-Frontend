@@ -1,14 +1,30 @@
 <script setup lang="ts">
-import { getProductWithSimplifiedEnv } from "@/api/product";
+import { deleteProduct, getProductWithSimplifiedEnv } from "@/api/product";
 import EnvironmentCardSimple from "@/components/EnvironmentCardSimple.vue";
+import { useToasts } from "@/composable/toasts";
 import type { ProductTableData } from "@/types/Products";
 import { Icon } from "@iconify/vue";
 import { type Ref, ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import ConfirmModal from "@/components/ConfirmModal.vue";
 
 const route = useRoute();
-
+const router = useRouter();
+const { makeToast } = useToasts();
+const confirmModal: Ref<typeof ConfirmModal | null> = ref(null);
 const product: Ref<ProductTableData | undefined> = ref();
+
+const deleteProductConfirm = () => {
+  confirmModal.value?.showConfirm();
+};
+const deleteProd = async () => {
+  if (!product.value) return;
+  const res = await deleteProduct(product.value.ID);
+  if (res) {
+    makeToast(res.Message);
+    router.push({ name: "product-list" });
+  }
+};
 
 onMounted(async () => {
   const res = await getProductWithSimplifiedEnv(parseInt(route.params?.id as string));
@@ -34,16 +50,16 @@ onMounted(async () => {
         <span class="text-xl font-medium">{{ product?.Name }} Details</span>
       </div>
       <div class="grid grid-cols-3 gap-2 items-center">
-        <button class="btn shadow-common bg-neutral-400 text-white rounded-[10px] px-4 py-2">
-          Get Report
-        </button>
         <button
           class="btn-primary shadow-common rounded-[10px] px-4 py-2"
           @click="$router.push({ name: 'edit-product', params: { id: $route.params.id } })"
         >
           Edit
         </button>
-        <button class="btn shadow-common bg-red-500 text-white rounded-[10px] px-4 py-2">
+        <button
+          class="btn shadow-common bg-red-500 text-white rounded-[10px] px-4 py-2"
+          @click="deleteProductConfirm"
+        >
           Delete
         </button>
       </div>
@@ -73,5 +89,10 @@ onMounted(async () => {
         />
       </div>
     </div>
+    <ConfirmModal
+      ref="confirmModal"
+      content="Deleting this product will delete everything associated to it"
+      @confirm="deleteProd"
+    />
   </div>
 </template>
