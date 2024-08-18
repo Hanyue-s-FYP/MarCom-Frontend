@@ -39,7 +39,8 @@ export const getSimulationList = async (id: number): Promise<SimulationWithEnvNa
     const resArr: SimulationWithEnvName[] = [];
     for (const el of res?.Data as GetSimulation[]) {
       const env = await getEnvironment(el.EnvironmentID);
-      resArr.push({ ...el, EnvironmentName: env.Name });
+      const cycles = await getSimulationCycles(el.ID);
+      resArr.push({ ...el, SimulationCycles: cycles, EnvironmentName: env.Name });
     }
     return resArr;
   }
