@@ -48,7 +48,7 @@ onMounted(async () => {
         <Icon icon="mdi:arrow-left" class="text-[2rem]" />
         <span class="text-xl font-medium">{{ product?.Name }} Details</span>
       </div>
-      <div class="grid grid-cols-3 gap-2 items-center">
+      <div class="grid grid-cols-2 gap-2 items-center">
         <button
           class="btn-primary shadow-common rounded-[10px] px-4 py-2"
           @click="$router.push({ name: 'edit-product', params: { id: $route.params.id } })"
