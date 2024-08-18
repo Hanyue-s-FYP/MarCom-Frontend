@@ -111,7 +111,7 @@ onMounted(async () => {
         >
           <EnvironmentCardSimple
             v-for="env in product?.InEnvironments"
-            :key="env.Name"
+            :key="env.ID"
             v-bind="env"
           />
         </div>
