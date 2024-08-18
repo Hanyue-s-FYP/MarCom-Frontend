@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { getEnvironment } from "@/api/environment";
-import { deleteProduct } from "@/api/product";
+import { deleteEnvironment, getEnvironment } from "@/api/environment";
 import { useToasts } from "@/composable/toasts";
 import type { EnvironmentListData } from "@/types/Environments";
 import { Icon } from "@iconify/vue";
@@ -19,7 +18,7 @@ const deleteEnvConfirm = () => {
 };
 const deleteEnv = async () => {
   if (!environment.value) return;
-  const res = await deleteProduct(environment.value.ID);
+  const res = await deleteEnvironment(environment.value.ID);
   if (res) {
     makeToast(res.Message);
     router.push({ name: "environment-list" });
@@ -28,6 +27,10 @@ const deleteEnv = async () => {
 
 onMounted(async () => {
   const res = await getEnvironment(parseInt(route.params?.id as string));
+  if (!res) {
+    router.push({ name: "environment-list" });
+    return;
+  }
   console.log(res);
   environment.value = res;
 });
