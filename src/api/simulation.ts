@@ -59,9 +59,11 @@ export const deleteSimulation = async (id: number): Promise<GeneralResponse> => 
 };
 
 export const startSimulation = async (id: number): Promise<GeneralResponse> => {
-  return await callApi(`simulations/start/${id}`, {
-    method: "GET",
-  });
+  return await callApi(`simulations/start/${id}`, { method: "GET" });
+};
+
+export const pauseSimulation = async (id: number): Promise<GeneralResponse> => {
+  return await callApi(`simulations/pause/${id}`, { method: "GET" });
 };
 
 export const getSimulationCycles = async (id: number): Promise<SimulationCycle[]> => {

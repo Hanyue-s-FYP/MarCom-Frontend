@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { getEnvironment } from "@/api/environment";
 import {
+  deleteSimulation,
   getSimulation,
   getSimulationCycle,
   getSimulationCycles,
+  pauseSimulation,
   startSimulation,
 } from "@/api/simulation";
 import BadgeGeneral from "@/components/BadgeGeneral.vue";
@@ -22,22 +24,39 @@ import {
   type SimulationEventDetail,
 } from "@/utils/simulations";
 import { Icon } from "@iconify/vue";
-import { computed, onMounted, ref, type Ref } from "vue";
+import { computed, onMounted, onUnmounted, ref, type Ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import VueApexCharts from "vue3-apexcharts";
 import { EventSource } from "extended-eventsource";
 import type { EnvironmentListData } from "@/types/Environments";
+import { ToastType } from "@/types/Toasts";
+import ConfirmModal from "@/components/ConfirmModal.vue";
 
 type ComplexSimulationEvent = SimulationEventDetail & {
   CycleId: number;
 };
 
 const route = useRoute();
+const router = useRouter();
 const { makeToast } = useToasts();
 
 // save a copy, no need keep going back and forth to get the things needed
 const envDetail: Ref<EnvironmentListData | undefined> = ref();
 const simulationDetail: Ref<SimulationWithEnvName | undefined> = ref();
+
+const confirmModal: Ref<typeof ConfirmModal | null> = ref(null);
+
+const deleteSimulationConfirm = () => {
+  confirmModal.value?.showConfirm();
+};
+const deleteSim = async () => {
+  if (!simulationDetail.value) return;
+  const res = await deleteSimulation(simulationDetail.value.ID);
+  if (res) {
+    makeToast(res.Message);
+    router.push({ name: "simulation-list" });
+  }
+};
 
 // le chart stuff (maybe migrate into own component)
 const chartOptions = computed(() => ({
@@ -85,8 +104,10 @@ const series: Ref<
 
 const currentActiveCycle = ref(1); // ID of the active cycle
 
+let simulationUpdateEventSource: EventSource;
 const toggleSimulationStatus = async () => {
   if (simulationDetail.value) {
+    // status COMPLETE will hide the button, so no need account for that
     if (SimulationStatus[simulationDetail.value.Status] === "IDLE") {
       const res = await startSimulation(simulationDetail.value.ID);
       if (!res) {
@@ -105,11 +126,19 @@ const toggleSimulationStatus = async () => {
 
       // maybe subscribe to the event source for stream updates
       makeListenerForUpdate(simulationDetail.value.ID);
+    } else if (SimulationStatus[simulationDetail.value.Status] === "RUNNING") {
+      // call server try pause the simulation
+      // ignore everything (possible last action is running, need obtain that before server can pause gracefully, but nvm, just stop listening to new events and server will eventually pause it)
+      const res = await pauseSimulation(simulationDetail.value.ID);
+      if (res) {
+        makeToast(res.Message);
+        // stop listening
+        simulationUpdateEventSource?.close();
+      }
     }
   }
 };
 
-let simulationUpdateEventSource: EventSource;
 const makeListenerForUpdate = (id: number) => {
   simulationUpdateEventSource = new EventSource(
     `${import.meta.env.VITE_SERVER_URL}/simulations/listen-for-event/${id}`,
@@ -126,7 +155,10 @@ const makeListenerForUpdate = (id: number) => {
     console.log(e, simulationUpdateEventSource);
     if (simulationUpdateEventSource.readyState === 2) {
       simulationUpdateEventSource.close();
+      return;
     }
+    makeToast("Failed to listen to updates", ToastType.ERROR);
+    fetchSimulation();
   };
   simulationUpdateEventSource.addEventListener("simulation-event", async (event) => {
     console.log(event.data);
@@ -174,12 +206,17 @@ const makeListenerForUpdate = (id: number) => {
       series.value = updateSeries();
     }
   });
-  simulationUpdateEventSource.addEventListener("simulation-complete", (event) => {
+  simulationUpdateEventSource.addEventListener("simulation-stopped", async (event) => {
     console.log("simulation end signal received", event.data);
-    makeToast("Simulation completed");
+    makeToast("Simulation stopped");
     simulationUpdateEventSource.close();
+    await fetchSimulation(); // update le simulation
   });
 };
+
+onUnmounted(() => {
+  simulationUpdateEventSource?.close(); // if got any listener, close it
+});
 
 const updateSimulationCycles = async (id: number) => {
   if (simulationDetail.value) {
@@ -205,24 +242,29 @@ const updateSimulationCycles = async (id: number) => {
   }
 };
 
-onMounted(async () => {
+const fetchSimulation = async () => {
   const id = parseInt(route.params?.id as string);
   const res = await getSimulation(id);
-  const router = useRouter();
   if (!res) {
     router.push({ name: "simulation-list" });
-    return;
+    return { id, res }; // wont use tiok tho
   }
   const envRes = await getEnvironment(res.EnvironmentID);
   if (!envRes) {
     router.push({ name: "simulation-list" });
-    return;
+    return { id, res }; // wont use tiok tho
   }
   simulationDetail.value = { ...res, EnvironmentName: envRes.Name };
   envDetail.value = envRes;
 
   await updateSimulationCycles(id);
   console.log(simulationDetail.value.SimulationCycles);
+
+  return { id, res };
+};
+
+onMounted(async () => {
+  const { id, res } = await fetchSimulation();
 
   // can return early if is not running (so only make listener when it is running)
   if (SimulationStatus[res.Status] !== "RUNNING") return;
@@ -231,7 +273,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="shadow-common bg-white rounded-[15px] min-h-full p-4 flex flex-col">
+  <div class="shadow-common bg-white rounded-[15px] min-h-full max-h-full p-4 flex flex-col">
     <!-- heading -->
     <div class="flex items-center justify-between mb-4">
       <div
@@ -241,24 +283,24 @@ onMounted(async () => {
         <Icon icon="mdi:arrow-left" class="text-[2rem]" />
         <span class="text-xl font-medium">{{ simulationDetail?.Name }} Details</span>
       </div>
-      <div class="grid grid-cols-3 gap-2 items-center">
-        <button class="btn shadow-common bg-neutral-400 text-white rounded-[10px] px-4 py-2">
-          Get Report
-        </button>
+      <div class="grid grid-cols-2 gap-2 items-center">
         <button
           class="btn-primary shadow-common rounded-[10px] px-4 py-2"
           @click="$router.push({ name: 'edit-simulation', params: { id: $route.params.id } })"
         >
           Edit
         </button>
-        <button class="btn shadow-common bg-red-500 text-white rounded-[10px] px-4 py-2">
+        <button
+          class="btn shadow-common bg-red-500 text-white rounded-[10px] px-4 py-2"
+          @click="deleteSimulationConfirm"
+        >
           Delete
         </button>
       </div>
     </div>
-    <div class="grid grid-cols-2 gap-4 flex-1 h-full">
+    <div class="flex gap-4 flex-1 overflow-hidden max-h-full">
       <!-- left -->
-      <div class="flex flex-col h-full">
+      <div class="flex flex-col w-1/2 overflow-hidden">
         <div class="flex items-center gap-8">
           <h2 class="text-3xl">{{ simulationDetail?.Name }}</h2>
           <div class="flex items-center gap-2">
@@ -296,9 +338,11 @@ onMounted(async () => {
           <VueApexCharts type="bar" :options="chartOptions" :series="series" />
         </div>
         <!-- le cycles -->
-        <div class="w-full h-full overflow-auto border border-neutral-400 rounded-[15px] mt-2 p-2">
+        <div
+          class="w-full flex-grow overflow-auto border border-neutral-400 rounded-[15px] mt-2 p-2"
+        >
           <span>Cycles</span>
-          <div class="flex flex-col gap-2 mt-2 h-full overflow-auto">
+          <div class="flex flex-col gap-2 mt-2 overflow-auto">
             <SimulationCycleCard
               v-for="(s, i) in simulationDetail?.SimulationCycles ?? []"
               :key="s.ID"
@@ -311,7 +355,7 @@ onMounted(async () => {
         </div>
       </div>
       <!-- right -->
-      <div class="w-full flex-grow h-full border border-neutral-400 rounded-[15px] p-2">
+      <div class="w-1/2 flex-grow border border-neutral-400 rounded-[15px] p-2 overflow-auto">
         <span
           >Cycle Events - Cycle
           {{
@@ -319,7 +363,7 @@ onMounted(async () => {
               ?.CycleNumber
           }}</span
         >
-        <div class="flex flex-col gap-2 mt-2 h-full overflow-auto">
+        <div class="flex flex-col gap-2 mt-2">
           <!-- event type of SIMULATION wouldnt get their badge -->
           <SimulationEventCard
             v-for="e in simulationDetail?.SimulationCycles?.find((s) => s.ID === currentActiveCycle)
@@ -332,5 +376,10 @@ onMounted(async () => {
         </div>
       </div>
     </div>
+    <ConfirmModal
+      ref="confirmModal"
+      @confirm="deleteSim"
+      content="Deleting this simulation will delete every simulation cycle data associated to it"
+    />
   </div>
 </template>
