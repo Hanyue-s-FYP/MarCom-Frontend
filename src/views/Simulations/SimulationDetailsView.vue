@@ -132,8 +132,7 @@ const toggleSimulationStatus = async () => {
       const res = await pauseSimulation(simulationDetail.value.ID);
       if (res) {
         makeToast(res.Message);
-        // stop listening
-        simulationUpdateEventSource?.close();
+        // server will send simulation event update to stop streaming to client, so no need disconnect here, SSE will disconnect when received the event
       }
     }
   }
@@ -371,7 +370,7 @@ onMounted(async () => {
             :key="e.ID"
             :title="e.Agent ? e.Agent.Name : 'Simulation Engine'"
             :event-detail="(e as SimulationEventDetail)?.ActualContent ?? e.EventDescription"
-            v-bind="e.EventType === 3 ? {} : { eventType: SimulationEventType[e.EventType] }"
+            :event-type="SimulationEventType[e.EventType]"
           />
         </div>
       </div>

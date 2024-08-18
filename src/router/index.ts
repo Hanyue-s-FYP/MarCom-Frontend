@@ -153,8 +153,8 @@ const router = createRouter({
 // do auth
 router.beforeEach(async (to) => {
   const auth = useAuthStore();
-  await auth.getMe(); // in case app is just restarted
   if (!to.meta?.notRequireAuth) {
+    await auth.getMe(); // in case app is just restarted
     if (!auth.isLoggedIn) {
       return { name: "login", replace: true };
     }
