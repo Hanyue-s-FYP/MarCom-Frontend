@@ -71,16 +71,17 @@ onMounted(async () => {
         class="shadow-common p-2 border border-neutral-400 rounded-[15px] grid grid-cols-2 gap-2"
       >
         <div
-          class="border border-neutral-400 p-2 rounded-[15px] flex"
+          class="border border-neutral-400 p-2 rounded-[15px] flex cursor-pointer card"
           v-for="product in environment?.Products"
           :key="product.ID"
+          @click="$router.push({ name: 'product-detail', params: { id: product.ID || 0 } })"
         >
           <div class="flex flex-col">
-            <span>{{ product?.Name }}</span>
-            <div class="grid grid-cols-[3fr,6fr] gap-2 text-neutral-400 text-xs font-medium">
+            <p class="card-title">{{ product?.Name }}</p>
+            <div class="grid grid-cols-[3fr,6fr] gap-2 text-inherit text-xs font-medium">
               <span>Cost</span><span>RM {{ product?.Cost?.toFixed(2) || "0.00" }}</span>
             </div>
-            <div class="grid grid-cols-[3fr,6fr] gap-2 text-neutral-400 text-xs font-medium">
+            <div class="grid grid-cols-[3fr,6fr] gap-2 text-inherit text-xs font-medium">
               <span>Sells At</span><span>RM {{ product?.Price?.toFixed(2) || "0.00" }}</span>
             </div>
           </div>
@@ -92,11 +93,12 @@ onMounted(async () => {
         class="shadow-common p-2 border border-neutral-400 rounded-[15px] grid grid-cols-2 gap-2"
       >
         <div
-          class="border border-neutral-400 p-2 rounded-[15px] flex gap-2"
+          class="border border-neutral-400 p-2 rounded-[15px] flex gap-2 cursor-pointer card"
           v-for="agent in environment?.Agents"
           :key="agent.ID"
+          @click="$router.push({ name: 'agent-detail', params: { id: agent.ID || 0 } })"
         >
-          <span>{{ agent?.Name }}</span>
+          <p class="card-title">{{ agent?.Name }}</p>
         </div>
       </div>
     </div>
@@ -107,3 +109,23 @@ onMounted(async () => {
     />
   </div>
 </template>
+
+<style scoped>
+.card {
+  @apply text-neutral-500;
+}
+
+.card .card-title {
+  @apply text-black;
+}
+
+.card:hover,
+.card:focus {
+  @apply text-primary border-primary;
+}
+
+.card:hover p,
+.card:focus p {
+  @apply text-primary;
+}
+</style>
