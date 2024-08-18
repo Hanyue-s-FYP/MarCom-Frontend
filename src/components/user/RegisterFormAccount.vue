@@ -14,6 +14,10 @@ const errorMsgs = reactive({
 
 // return empty string if valid
 const getPasswordErr = (pass: string): string => {
+  if (pass.length < 8) {
+    return "Password should be at least 8 characters";
+  }
+
   if (/\s/.test(pass)) {
     return "Password should not contain space";
   }
@@ -22,14 +26,9 @@ const getPasswordErr = (pass: string): string => {
     return "Password should contain one of the characters: @$!%*#?&";
   }
 
-  if (pass.length < 8) {
-    return "Password should be at least 8 characters";
-  }
-
   if (!/[a-zA-Z\d]/.test(pass)) {
     return "Password should contain at least one digit, one uppercase and one lowercase letter";
   }
-
   return "";
 };
 
@@ -38,20 +37,12 @@ const isPasswordMatch = computed(() => model.value!!.Password === model.value!!.
 const validateForm = async (): Promise<boolean> => {
   let hasError = false;
 
-  if (model.value!!.Password.length < 1) {
-    errorMsgs.passwordErr = "Password is required";
-    hasError = true;
-  }
-
   const passErr = getPasswordErr(model.value!!.Password);
   if (passErr) {
+    console.log("YOYOYO");
     errorMsgs.passwordErr = passErr;
     hasError = true;
-  } else {
-    errorMsgs.passwordErr = "";
-  }
-
-  if (!isPasswordMatch.value && !passErr) {
+  } else if (!isPasswordMatch.value) {
     errorMsgs.passwordErr = "Passwords mismatch";
     errorMsgs.confirmPasswordErr = "Passwords mismatch";
     hasError = true;
