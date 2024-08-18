@@ -30,7 +30,6 @@ onMounted(async () => {
   const res = await getProductWithSimplifiedEnv(parseInt(route.params?.id as string));
   console.log(res);
   if (!res) {
-    const router = useRouter();
     router.replace({ name: "product-list" });
     return;
   }
