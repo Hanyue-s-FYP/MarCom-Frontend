@@ -31,11 +31,10 @@ export const transformSimulationEventAPIToDetail = (
   if (typeStr === "SIMULATION" || typeStr === "ACTION_RESP")
     return { ...ev, ActualContent: ev.EventDescription };
 
-  const split = ev.EventDescription.split(":");
-  if (split.length !== 2) {
-    // impossible, otherwise smtg wrong alrd
-    return;
-  }
+  const temp = ev.EventDescription.split(":");
+  const split = temp.splice(0, 1); // handle more than one :
+  split.push(temp.join(":"));
+  console.log(split, temp);
   if (typeStr === "BUY") {
     // find the product in the array
     const prod = products.find((p) => p.ID === parseInt(split[0]));

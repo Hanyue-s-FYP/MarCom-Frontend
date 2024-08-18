@@ -56,10 +56,12 @@ export const getProductWithSimplifiedEnv = async (
   return undefined;
 };
 
-export const updateProduct = async (data: EditProduct): Promise<GeneralResponse> => {
+export const updateProduct = async (data: EditProduct | GetProduct): Promise<GeneralResponse> => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { Report: _, ...rest } = data as GetProduct; // for efficiency purpose just trick ts into believing that
   return await callApi(`products`, {
     method: "PUT",
-    data,
+    data: rest,
   });
 };
 

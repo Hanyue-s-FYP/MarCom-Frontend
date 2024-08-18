@@ -13,12 +13,13 @@ defineEmits<{ (e: "delete", id: number): void }>();
     class="border border-neutral-400 rounded-[12px] p-2 hover:border-primary hover:cursor-pointer hover:text-primary"
     @click="$router.push({ name: 'simulation-detail', params: { id: ID } })"
   >
-    <div
-      class="flex justify-between items-center mb-2 cursor-pointer"
-      @click.stop="$emit('delete', ID)"
-    >
+    <div class="flex justify-between items-center mb-2">
       <span class="font-bold">{{ Name }}</span>
-      <Icon icon="mdi:delete" class="text-red-500" />
+      <Icon
+        icon="mdi:delete"
+        class="text-red-500 cursor-pointer"
+        @click.stop="$emit('delete', ID)"
+      />
     </div>
     <div class="flex items-center gap-2 text-neutral-400">
       <Icon icon="ri:building-fill" />
