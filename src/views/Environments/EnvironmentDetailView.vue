@@ -1,12 +1,30 @@
 <script setup lang="ts">
 import { getEnvironment } from "@/api/environment";
+import { deleteProduct } from "@/api/product";
+import { useToasts } from "@/composable/toasts";
 import type { EnvironmentListData } from "@/types/Environments";
 import { Icon } from "@iconify/vue";
 import { type Ref, ref, onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
+import ConfirmModal from "@/components/ConfirmModal.vue";
 
 const route = useRoute();
 const environment: Ref<EnvironmentListData | undefined> = ref();
+const router = useRouter();
+const { makeToast } = useToasts();
+const confirmModal: Ref<typeof ConfirmModal | null> = ref(null);
+
+const deleteEnvConfirm = () => {
+  confirmModal.value?.showConfirm();
+};
+const deleteEnv = async () => {
+  if (!environment.value) return;
+  const res = await deleteProduct(environment.value.ID);
+  if (res) {
+    makeToast(res.Message);
+    router.push({ name: "environment-list" });
+  }
+};
 
 onMounted(async () => {
   const res = await getEnvironment(parseInt(route.params?.id as string));
@@ -27,16 +45,16 @@ onMounted(async () => {
         <span class="text-xl font-medium">{{ environment?.Name }} Details</span>
       </div>
       <div class="grid grid-cols-3 gap-2 items-center">
-        <button class="btn shadow-common bg-neutral-400 text-white rounded-[10px] px-4 py-2">
-          Get Report
-        </button>
         <button
           class="btn-primary shadow-common rounded-[10px] px-4 py-2"
           @click="$router.push({ name: 'edit-environment', params: { id: $route.params.id } })"
         >
           Edit
         </button>
-        <button class="btn shadow-common bg-red-500 text-white rounded-[10px] px-4 py-2">
+        <button
+          class="btn shadow-common bg-red-500 text-white rounded-[10px] px-4 py-2"
+          @click="deleteEnvConfirm"
+        >
           Delete
         </button>
       </div>
@@ -79,5 +97,10 @@ onMounted(async () => {
         </div>
       </div>
     </div>
+    <ConfirmModal
+      ref="confirmModal"
+      @confirm="deleteEnv"
+      content="Deleting this environment will delete everything associated to it"
+    />
   </div>
 </template>
