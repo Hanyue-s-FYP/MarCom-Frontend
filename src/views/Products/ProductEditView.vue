@@ -6,20 +6,31 @@ import ProductForm from "@/components/product/ProductForm.vue";
 import { onMounted, ref, type Ref } from "vue";
 import { getProduct, updateProduct } from "@/api/product";
 import { useToasts } from "@/composable/toasts";
+import ConfirmModal from "@/components/ConfirmModal.vue";
 
 const route = useRoute();
 const router = useRouter();
 const { makeToast } = useToasts();
+const confirmModal: Ref<typeof ConfirmModal | null> = ref(null);
+
+const updateProductConfirm = () => {
+  confirmModal.value?.showConfirm();
+};
 
 const product: Ref<EditProduct | undefined> = ref();
 
-const editProduct = async (data: EditProduct) => {
-  console.log(data);
-  const res = await updateProduct(data);
+const editProductConfirmed = async () => {
+  const res = await updateProduct(product.value!!);
   if (res) {
     makeToast(res.Message);
     router.push({ name: "product-detail", params: { id: route.params.id } });
   }
+};
+
+const editProduct = async (data: EditProduct) => {
+  console.log(data);
+  product.value = data;
+  updateProductConfirm();
 };
 
 onMounted(async () => {
@@ -54,5 +65,10 @@ onMounted(async () => {
         v-if="product"
       />
     </div>
+    <ConfirmModal
+      ref="confirmModal"
+      content="Updating this product will delete competitor research report associated to it"
+      @confirm="editProductConfirmed"
+    />
   </div>
 </template>

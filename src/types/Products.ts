@@ -10,6 +10,6 @@ export interface CreateProduct {
 
 export type EditProduct = CreateProduct & { ID: number };
 
-export type GetProduct = EditProduct;
+export type GetProduct = EditProduct & { Report: string };
 
 export type ProductTableData = GetProduct & { InEnvironments: SimplifiedEnvironment[] };

@@ -16,3 +16,7 @@ input:disabled {
   background-color: inherit;
   cursor: not-allowed;
 }
+
+a {
+  @apply text-primary;
+}
