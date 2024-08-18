@@ -20,7 +20,6 @@ const emits = defineEmits<{
 }>();
 
 const saveBusinessPublicProfile = async () => {
-  // TODO save to db
   let updateData: UpdateBusinessData = {
     ID: auth.userData?.RoleID ?? 0, // not possible get 0
     Description: (description.value as string) ?? "", // should got smtg eh

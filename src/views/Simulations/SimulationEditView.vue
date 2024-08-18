@@ -13,7 +13,6 @@ const { makeToast } = useToasts();
 
 const simulationData: Ref<EditSimulation | undefined> = ref();
 
-// TODO save to backend
 const editSimulation = async (data: EditSimulation) => {
   console.log(data);
   const res = await updateSimulation(data);

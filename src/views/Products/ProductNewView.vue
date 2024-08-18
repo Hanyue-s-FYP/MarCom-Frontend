@@ -9,7 +9,6 @@ import { useToasts } from "@/composable/toasts";
 const router = useRouter();
 const { makeToast } = useToasts();
 
-// TODO save to backend
 const createNewProduct = async (data: CreateProduct) => {
   console.log(data);
   const res = await createProduct(data);

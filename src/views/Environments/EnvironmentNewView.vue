@@ -9,7 +9,6 @@ import { useToasts } from "@/composable/toasts";
 const router = useRouter();
 const { makeToast } = useToasts();
 
-// TODO save to backend
 const createEnvironment = async (data: CreateEnvironment) => {
   const res = await createNewEnvironment(data);
   console.log(res);

@@ -68,7 +68,6 @@ const validateForm = () => {
   return !hasError;
 };
 
-// TODO add validations
 const submitForm = () => {
   if (!validateForm()) return;
   emit("submit", environmentData);

@@ -22,13 +22,6 @@ export const getSimulation = async (id: number): Promise<GetSimulation> => {
   });
 };
 
-// TODO do me plz
-export const getSimulationWithEnvName = async (id: number): Promise<GetSimulation> => {
-  return await callApi(`simulations/${id}`, {
-    method: "GET",
-  });
-};
-
 // giv business id for this
 export const getSimulationList = async (id: number): Promise<SimulationWithEnvName[]> => {
   const res = await callApi(`business-simulations/${id}`, {

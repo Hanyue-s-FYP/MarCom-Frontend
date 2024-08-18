@@ -54,7 +54,6 @@ const validateForm = () => {
   return !hasError;
 };
 
-// TODO make validations
 const submitForm = () => {
   if (!validateForm()) return;
   emit("submit", simulationData);
