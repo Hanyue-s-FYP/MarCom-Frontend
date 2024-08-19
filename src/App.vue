@@ -24,9 +24,14 @@ const logout = () => {
   router.push({ name: "login", replace: true });
 };
 
-const isLoginOrRegister = () => {
+const shouldShowNav = () => {
   const route = useRoute();
-  return route.name === "login" || route.name === "register";
+  return !(
+    route.name === "login" ||
+    route.name === "register" ||
+    route.name === "forget-password" ||
+    route.name === "reset-password"
+  );
 };
 </script>
 
@@ -34,7 +39,7 @@ const isLoginOrRegister = () => {
   <!-- hide nav if is at login or register page -->
   <div
     class="bg-white shadow-common pt-6 min-w-52 rounded-[20px] flex flex-col justify-between"
-    v-if="!isLoginOrRegister()"
+    v-if="shouldShowNav()"
   >
     <nav>
       <div class="flex justify-end px-4">

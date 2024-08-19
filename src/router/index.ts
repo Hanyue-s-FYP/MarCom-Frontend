@@ -147,6 +147,25 @@ const router = createRouter({
         noAccessWhenLoggedIn: true,
       },
     },
+    {
+      path: "/forget-password",
+      name: "forget-password",
+      component: () => import("@/views/ForgetPasswordView.vue"),
+      meta: {
+        notRequireAuth: true, // instead of adding requireAuth to every route that needs it (which will be majority of the routes), add to those who don't need it first (because will be way less)
+        noAccessWhenLoggedIn: true,
+      },
+    },
+    {
+      path: "/reset-password/:token",
+      name: "reset-password",
+      component: () => import("@/views/ResetPasswordView.vue"),
+      meta: {
+        notRequireAuth: true, // instead of adding requireAuth to every route that needs it (which will be majority of the routes), add to those who don't need it first (because will be way less)
+        noAccessWhenLoggedIn: true,
+      },
+    },
+    // catch all route, for those invalid routes
     { path: "/:pathMatch(.*)*", name: "NotFound", redirect: { name: "dashboard-data" } },
   ],
 });

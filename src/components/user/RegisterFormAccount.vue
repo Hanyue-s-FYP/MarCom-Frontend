@@ -3,6 +3,7 @@ import { checkUserWithUsername } from "@/api/user";
 import type { UserAccountInfo } from "@/types/User";
 import { computed, reactive } from "vue";
 import InputGeneric from "../InputGeneric.vue";
+import { getPasswordErr } from "@/utils";
 
 const model = defineModel<UserAccountInfo & { ConfirmPassword: string }>();
 
@@ -12,26 +13,6 @@ const errorMsgs = reactive({
   confirmPasswordErr: "",
 });
 
-// return empty string if valid
-const getPasswordErr = (pass: string): string => {
-  if (pass.length < 8) {
-    return "Password should be at least 8 characters";
-  }
-
-  if (/\s/.test(pass)) {
-    return "Password should not contain space";
-  }
-
-  if (!/[@$!%*#?&]/.test(pass)) {
-    return "Password should contain one of the characters: @$!%*#?&";
-  }
-
-  if (!/[a-zA-Z\d]/.test(pass)) {
-    return "Password should contain at least one digit, one uppercase and one lowercase letter";
-  }
-  return "";
-};
-
 const isPasswordMatch = computed(() => model.value!!.Password === model.value!!.ConfirmPassword);
 
 const validateForm = async (): Promise<boolean> => {
@@ -39,7 +20,6 @@ const validateForm = async (): Promise<boolean> => {
 
   const passErr = getPasswordErr(model.value!!.Password);
   if (passErr) {
-    console.log("YOYOYO");
     errorMsgs.passwordErr = passErr;
     hasError = true;
   } else if (!isPasswordMatch.value) {

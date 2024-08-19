@@ -5,7 +5,7 @@ import { callApi } from "@/utils";
 
 export const getDashboardProducts = async (): Promise<DashboardProduct[]> => {
   const res = await callApi("dashboard/products", { method: "GET" });
-  if (res.Data) {
+  if (res?.Data) {
     return res.Data;
   }
   return [];
@@ -13,7 +13,7 @@ export const getDashboardProducts = async (): Promise<DashboardProduct[]> => {
 
 export const getDashboardAgents = async (): Promise<DashboardAgent[]> => {
   const res = await callApi("dashboard/agents", { method: "GET" });
-  if (res.Data) {
+  if (res?.Data) {
     return res.Data;
   }
   return [];
@@ -21,7 +21,7 @@ export const getDashboardAgents = async (): Promise<DashboardAgent[]> => {
 
 export const getDashboardEnvironments = async (): Promise<DashboardEnvironment[]> => {
   const res = await callApi("dashboard/environments", { method: "GET" });
-  if (res.Data) {
+  if (res?.Data) {
     return res.Data;
   }
   return [];

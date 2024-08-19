@@ -55,6 +55,20 @@ export const checkUserWithUsername = async (username: string): Promise<boolean> 
   return false;
 };
 
+export const sendForgetPasswordLink = async (data: {
+  Username: string;
+  Email: string;
+}): Promise<GeneralResponse> => {
+  return await callApi("forget-password", { method: "POST", data });
+};
+
+export const resetPassword = async (data: {
+  Password: string;
+  ForgetPasswordToken: string;
+}): Promise<GeneralResponse> => {
+  return await callApi("reset-password", { method: "POST", data });
+};
+
 export const getBusiness = async (id: number): Promise<BusinessPublicProfile> => {
   const res = await callApi(`business/${id}`, {
     method: "GET",

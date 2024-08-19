@@ -26,7 +26,7 @@ const validateForm = () => {
     errorMsgs.emailErr = "Email is required";
     hasError = true;
   } else if (!/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(model.value!!.Email)) {
-    errorMsgs.emailErr = "Invalid email format, please check";
+    errorMsgs.emailErr = "Invalid email format";
     hasError = true;
   } else {
     errorMsgs.emailErr = "";
@@ -35,7 +35,7 @@ const validateForm = () => {
     errorMsgs.contactNumberErr = "Contact number is required";
     hasError = true;
   } else if (!/\d{10,11}/.test(model.value!!.PhoneNumber)) {
-    errorMsgs.contactNumberErr = "Invalid phone number format, please check";
+    errorMsgs.contactNumberErr = "Invalid phone number length";
     hasError = true;
   } else {
     errorMsgs.contactNumberErr = "";

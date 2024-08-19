@@ -32,7 +32,7 @@ const login = async () => {
   localStorage.setItem("userToken", res.Token);
   makeToast(res.Message);
   await useAuthStore().getMe();
-  router.push("/");
+  router.push({ name: "dashboard-data", replace: true });
 };
 </script>
 
@@ -57,6 +57,9 @@ const login = async () => {
         v-model="password"
         :error-msg="errorMsgs.passwordErr"
       />
+      <RouterLink :to="{ name: 'forget-password' }" class="cursor-pointer text-primary self-end"
+        >Forgot Password?</RouterLink
+      >
       <button class="btn-primary w-full">Login</button>
       <div>
         Don't have an account?

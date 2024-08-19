@@ -11,4 +11,8 @@ export type UserDetail = {
 
 export type User = UserAccountInfo & UserDetail;
 
-export type GetUser = Omit<User, "Password"> & { Role: string; RoleID: number };
+export type GetUser = {
+  User: Omit<User, "Password"> & { ID: number };
+  Role: string;
+  RoleID: number;
+};

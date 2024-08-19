@@ -80,6 +80,26 @@ export const callApi = async (
     .finally(() => setLoading(false));
 };
 
+// return empty string if valid
+export const getPasswordErr = (pass: string): string => {
+  if (pass.length < 8) {
+    return "Password should be at least 8 characters";
+  }
+
+  if (/\s/.test(pass)) {
+    return "Password should not contain space";
+  }
+
+  if (!/[@$!%*#?&]/.test(pass)) {
+    return "Password should contain one of the characters: @$!%*#?&";
+  }
+
+  if (!/^(?:(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*)$/.test(pass)) {
+    return "Password should contain at least one digit, one uppercase and one lowercase letter";
+  }
+  return "";
+};
+
 export const isFloat = (val: string): boolean => {
   return !isNaN(parseFloat(val)) && /^\d+\.?\d*$/.test(val);
 };
