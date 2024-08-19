@@ -147,6 +147,7 @@ const router = createRouter({
         noAccessWhenLoggedIn: true,
       },
     },
+    { path: "/:pathMatch(.*)*", name: "NotFound", redirect: { name: "dashboard-data" } },
   ],
 });
 
