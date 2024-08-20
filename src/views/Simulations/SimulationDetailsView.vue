@@ -59,7 +59,7 @@ const deleteSim = async () => {
 };
 
 // le chart stuff (maybe migrate into own component)
-const chartOptions = computed(() => ({
+const barChartOptions = computed(() => ({
   chart: {
     id: "simulation-cycle-details",
   },
@@ -71,7 +71,15 @@ const chartOptions = computed(() => ({
   },
 }));
 
-const updateSeries = () => {
+const pieChartOptions = computed(() => ({
+  chart: {
+    width: 380,
+    type: "pie",
+  },
+  labels: envDetail.value?.Products?.map((p) => p.Name) ?? [],
+}));
+
+const updateCycleEarningSeries = () => {
   return (
     envDetail.value?.Products?.map((p) => {
       return {
@@ -79,7 +87,7 @@ const updateSeries = () => {
         // get profit of every cycle (profit defined as Price for each product bought)
         data:
           simulationDetail.value?.SimulationCycles?.slice(1)?.map((c) => {
-            // reduce all the events such that for events that have a product, it should be BUY, and then can reduce how many agents bought that product
+            // reduce all the events such that for events that have a product, it should be BUY, and then can reduce how many profit is the product
             return (
               c.SimulationEvents?.reduce((acc, e) => {
                 const prod = (e as SimulationEventDetail).Product;
@@ -95,12 +103,35 @@ const updateSeries = () => {
   );
 };
 
-const series: Ref<
+const updateSimulationProductSeries = () => {
+  return (
+    envDetail.value?.Products?.map((p) => {
+      return (
+        simulationDetail.value?.SimulationCycles?.slice(1)?.map((c) => {
+          // reduce all the events such that for events that have a product, it should be BUY, and then can reduce how many agents bought that product
+          return (
+            c.SimulationEvents?.reduce((acc, e) => {
+              const prod = (e as SimulationEventDetail).Product;
+              if (prod && prod.ID === p.ID) {
+                return acc + 1;
+              }
+              return acc;
+            }, 0) ?? 0
+          );
+        }) ?? []
+      ).reduce((acc, c) => acc + c, 0); // reduce every cycle's buy count to a single number
+    }) ?? []
+  );
+};
+
+const cycleEarningSeries: Ref<
   {
     name: string;
     data: number[];
   }[]
 > = ref([]);
+
+const simulationProductSeries: Ref<number[]> = ref([]);
 
 const currentActiveCycle = ref(1); // ID of the active cycle
 
@@ -202,7 +233,7 @@ const makeListenerForUpdate = (id: number) => {
           }
         }
       }
-      series.value = updateSeries();
+      cycleEarningSeries.value = updateCycleEarningSeries();
     }
   });
   simulationUpdateEventSource.addEventListener("simulation-stopped", async (event) => {
@@ -233,7 +264,8 @@ const updateSimulationCycles = async (id: number) => {
         )),
     );
     simulationDetail.value.SimulationCycles = cycleRes;
-    series.value = updateSeries();
+    cycleEarningSeries.value = updateCycleEarningSeries();
+    simulationProductSeries.value = updateSimulationProductSeries();
     // always focus on the last cycle
     currentActiveCycle.value =
       simulationDetail.value.SimulationCycles[simulationDetail.value.SimulationCycles.length - 1]
@@ -334,7 +366,10 @@ onMounted(async () => {
         </div>
         <!-- le graph -->
         <div class="w-full border border-neutral-400 rounded-[15px] mt-2 p-2 pb-0">
-          <VueApexCharts type="bar" :options="chartOptions" :series="series" />
+          <!-- for each cycle how much is the earning -->
+          <VueApexCharts type="bar" :options="barChartOptions" :series="cycleEarningSeries" />
+          <!-- for each product how many agents bought it across the simulation -->
+          <VueApexCharts type="pie" :options="pieChartOptions" :series="simulationProductSeries" />
         </div>
         <!-- le cycles -->
         <div
