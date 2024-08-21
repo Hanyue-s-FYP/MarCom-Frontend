@@ -4,7 +4,7 @@ import { Icon } from "@iconify/vue";
 import { useRoute, useRouter } from "vue-router";
 import ProductForm from "@/components/product/ProductForm.vue";
 import { onMounted, ref, type Ref } from "vue";
-import { getProduct, updateProduct } from "@/api/product";
+import { generateProductCompetitorReport, getProduct, updateProduct } from "@/api/product";
 import { useToasts } from "@/composable/toasts";
 import ConfirmModal from "@/components/ConfirmModal.vue";
 
@@ -20,11 +20,17 @@ const updateProductConfirm = () => {
 const product: Ref<EditProduct | undefined> = ref();
 
 const editProductConfirmed = async () => {
-  const res = await updateProduct(product.value!!);
-  if (res) {
-    makeToast(res.Message);
-    router.push({ name: "product-detail", params: { id: route.params.id } });
+  if (!product.value) return;
+  const res = await updateProduct(product.value);
+  if (!res) return;
+  makeToast(res.Message);
+  if (product.value.Report) {
+    makeToast("Regenerating product report");
+    const report = await generateProductCompetitorReport(product.value.ID);
+    if (!report) return;
+    makeToast("Successfully generated product competitor report");
   }
+  router.push({ name: "product-detail", params: { id: route.params.id } });
 };
 
 const editProduct = async (data: EditProduct) => {

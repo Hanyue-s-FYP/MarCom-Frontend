@@ -8,9 +8,9 @@ export interface CreateProduct {
   BusinessID: number;
 }
 
-export type EditProduct = CreateProduct & { ID: number };
+export type EditProduct = CreateProduct & { ID: number; Report: string };
 
-export type GetProduct = EditProduct & { Report: string };
+export type GetProduct = EditProduct;
 
 export type ProductTableData = GetProduct & { InEnvironments: SimplifiedEnvironment[] };
 
