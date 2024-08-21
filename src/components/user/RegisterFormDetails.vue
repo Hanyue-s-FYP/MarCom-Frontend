@@ -12,6 +12,17 @@ const errorMsgs = reactive({
   displayNameErr: "",
 });
 
+const businessTypes: string[] = [
+  "Education",
+  "Food & Beverage",
+  "Games",
+  "Manufacturing",
+  "Retails",
+  "Sales",
+  "Service",
+  "Others",
+];
+
 const validateForm = () => {
   // check all required
   let hasError = false;
@@ -79,12 +90,23 @@ defineExpose({
       v-model="model!!.PhoneNumber"
       :error-msg="errorMsgs.contactNumberErr"
     />
-    <InputGeneric
-      name="Business Type"
-      type="text"
-      placeholder="Education"
-      v-model="model!!.BusinessType"
-      :error-msg="errorMsgs.businessTypeErr"
-    />
+    <div class="flex flex-col w-full" :class="{ 'text-red-500': errorMsgs.businessTypeErr }">
+      <label for="environment" class="font-bold">Environment</label>
+      <select
+        name="environment"
+        id="environment"
+        class="border border-neutral-400 rounded-[12px] py-2 px-3 relative focus:border-primary focus:text-primary"
+        :class="{ 'border-red-500': errorMsgs.businessTypeErr }"
+        v-model="model!!.BusinessType"
+      >
+        <option value="" disabled>Please select business type</option>
+        <option v-for="(b, i) in businessTypes" :key="i" :value="b">{{ b }}</option>
+      </select>
+      <Transition>
+        <span v-if="errorMsgs.businessTypeErr" class="mt-2 block text-red-500 text-sm">{{
+          errorMsgs.businessTypeErr
+        }}</span>
+      </Transition>
+    </div>
   </div>
 </template>
