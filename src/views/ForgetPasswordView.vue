@@ -87,6 +87,12 @@ const sendLink = async () => {
         v-model="email"
         :error-msg="errorMsgs.emailErr"
       />
+      <button
+        @click="$router.push('/login')"
+        class="btn cursor-pointer btn bg-neutral-400 text-white w-full"
+      >
+        Back
+      </button>
       <button class="btn-primary w-full">Send Verification Link</button>
     </form>
   </div>
