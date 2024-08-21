@@ -19,7 +19,7 @@ defineEmits<{
   <div
     class="w-full flex items-center justify-between border rounded-[15px] p-2 cursor-pointer"
     :class="[isActive ? 'border-primary text-primary' : 'border-neutral-400']"
-    @click="$emit('clicked')"
+    @click.stop="$emit('clicked')"
   >
     <div class="flex flex-col" v-if="index === 0">
       <span>Simulation Initialisation</span>

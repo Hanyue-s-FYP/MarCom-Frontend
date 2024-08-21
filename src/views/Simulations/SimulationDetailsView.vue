@@ -40,6 +40,8 @@ const route = useRoute();
 const router = useRouter();
 const { makeToast } = useToasts();
 
+const cycleExpanded = ref(false);
+
 // save a copy, no need keep going back and forth to get the things needed
 const envDetail: Ref<EnvironmentListData | undefined> = ref();
 const simulationDetail: Ref<SimulationWithEnvName | undefined> = ref();
@@ -75,6 +77,9 @@ const pieChartOptions = computed(() => ({
   chart: {
     width: 380,
     type: "pie",
+  },
+  legend: {
+    position: "bottom",
   },
   labels: envDetail.value?.Products?.map((p) => p.Name) ?? [],
 }));
@@ -304,7 +309,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="shadow-common bg-white rounded-[15px] min-h-full max-h-full p-4 flex flex-col">
+  <div class="shadow-common bg-white rounded-[15px] min-h-full p-4 flex flex-col">
     <!-- heading -->
     <div class="flex items-center justify-between mb-4">
       <div
@@ -329,9 +334,9 @@ onMounted(async () => {
         </button>
       </div>
     </div>
-    <div class="flex gap-4 flex-1 overflow-hidden max-h-full">
+    <div class="flex gap-4 flex-1">
       <!-- left -->
-      <div class="flex flex-col w-1/2 overflow-hidden">
+      <div class="flex flex-col w-1/2 sticky top-2">
         <div class="flex items-center gap-8">
           <h2 class="text-3xl">{{ simulationDetail?.Name }}</h2>
           <div class="flex items-center gap-2">
@@ -366,38 +371,64 @@ onMounted(async () => {
         </div>
         <!-- le graph -->
         <div class="w-full border border-neutral-400 rounded-[15px] mt-2 p-2 pb-0">
+          <span>Product Earnings</span>
           <!-- for each cycle how much is the earning -->
           <VueApexCharts type="bar" :options="barChartOptions" :series="cycleEarningSeries" />
-          <!-- for each product how many agents bought it across the simulation -->
-          <VueApexCharts type="pie" :options="pieChartOptions" :series="simulationProductSeries" />
         </div>
-        <!-- le cycles -->
         <div
-          class="w-full flex-grow overflow-auto border border-neutral-400 rounded-[15px] mt-2 p-2"
+          class="w-full border border-neutral-400 rounded-[15px] mt-2 p-2 pb-0 flex flex-col justify-center"
         >
-          <span>Cycles</span>
-          <div class="flex flex-col gap-2 mt-2 overflow-auto">
-            <SimulationCycleCard
-              v-for="(s, i) in simulationDetail?.SimulationCycles ?? []"
-              :key="s.ID"
-              :index="i"
-              :event-count="s.SimulationEvents?.length ?? 0"
-              :is-active="currentActiveCycle === s.ID"
-              @clicked="currentActiveCycle = s.ID"
-            />
-          </div>
+          <span>Product Buys</span>
+          <!-- for each product how many agents bought it across the simulation -->
+          <VueApexCharts
+            type="pie"
+            :options="pieChartOptions"
+            :series="simulationProductSeries"
+            class="flex justify-center"
+          />
         </div>
       </div>
       <!-- right -->
-      <div class="w-1/2 flex-grow border border-neutral-400 rounded-[15px] p-2 overflow-auto">
-        <span
-          >Cycle Events - Cycle
-          {{
-            simulationDetail?.SimulationCycles?.find((s) => s.ID === currentActiveCycle)
-              ?.CycleNumber
-          }}</span
-        >
-        <div class="flex flex-col gap-2 mt-2">
+      <div class="w-1/2 flex-grow border border-neutral-400 rounded-[15px]">
+        <!-- le cycles -->
+        <div class="p-2 bg-white bg-opacity-70 backdrop-blur-sm sticky top-0 rounded-[15px]">
+          <div
+            class="w-full flex-grow border border-neutral-400 rounded-[15px] p-2"
+            @click="cycleExpanded = !cycleExpanded"
+          >
+            <div class="flex w-full justify-between items-center cursor-pointer">
+              <span
+                >Cycle Events - Cycle
+                {{
+                  simulationDetail?.SimulationCycles?.find((s) => s.ID === currentActiveCycle)
+                    ?.CycleNumber
+                }}</span
+              >
+              <Icon
+                icon="ion:chevron-up"
+                class="cycle-chevron"
+                :class="[cycleExpanded ? 'cycle-expanded' : 'rotate-180']"
+              />
+            </div>
+            <div
+              class="grid grid-transition"
+              :class="[cycleExpanded ? 'grid-rows-[1fr] mt-2' : 'grid-rows-[0fr]']"
+            >
+              <div class="flex flex-col gap-2 overflow-hidden">
+                <SimulationCycleCard
+                  v-for="(s, i) in simulationDetail?.SimulationCycles ?? []"
+                  :key="s.ID"
+                  :index="i"
+                  :event-count="s.SimulationEvents?.length ?? 0"
+                  :is-active="currentActiveCycle === s.ID"
+                  @clicked="currentActiveCycle = s.ID"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-2 pt-0 p-2">
           <!-- event type of SIMULATION wouldnt get their badge -->
           <SimulationEventCard
             v-for="e in simulationDetail?.SimulationCycles?.find((s) => s.ID === currentActiveCycle)
@@ -417,3 +448,17 @@ onMounted(async () => {
     />
   </div>
 </template>
+
+<style scoped>
+.grid-transition {
+  transition: all 0.25s ease-in-out;
+}
+
+.cycle-chevron {
+  transition: all 0.25s ease-in-out;
+}
+
+.cycle-expanded {
+  transform: rotate(0);
+}
+</style>
