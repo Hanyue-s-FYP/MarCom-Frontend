@@ -1,20 +1,24 @@
 # MarCom-Frontend
 
-This template should help get you started developing with Vue 3 in Vite.
+MarCom-Frontend is a repository containing the Frontend code for the [MarCom](https://github.com/Hanyue-s-FYP) project
 
-## Recommended IDE Setup
+## Implementation & Features
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+- Implemented with `vite` and `vue` as well as `TypeScript`
 
-## Type Support for `.vue` Imports in TS
+## Setup and running the project
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+### Clone this repository to local
 
-## Customize configuration
+```sh
+git clone https://github.com/Hanyue-s-FYP/MarCom-Frontend.git
+```
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+### Setup environment variables
 
-## Project Setup
+> Setup environment variables (with reference to .env.example)
+
+### Install dependencies
 
 ```sh
 npm install
@@ -30,10 +34,4 @@ npm run dev
 
 ```sh
 npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
 ```
