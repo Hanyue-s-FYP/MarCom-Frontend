@@ -8,6 +8,8 @@ MarCom-Frontend is a repository containing the Frontend code for the [MarCom](ht
 
 ## Setup and running the project
 
+> Ensure you have node > 22.3 installed in your system
+
 ### Clone this repository to local
 
 ```sh
