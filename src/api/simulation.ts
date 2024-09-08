@@ -41,6 +41,14 @@ export const getSimulationList = async (id: number): Promise<SimulationWithEnvNa
   return [];
 };
 
+export const getSimulationListOfEnvironment = async (id: number): Promise<GetSimulation[]> => {
+  const res = await callApi(`simulations/of-environment/${id}`, { method: "GET" });
+
+  if (res?.Data) return res.Data;
+
+  return [];
+};
+
 export const updateSimulation = async (data: EditSimulation): Promise<GeneralResponse> => {
   return await callApi("simulations", {
     method: "PUT",
