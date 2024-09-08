@@ -7,7 +7,7 @@ const router = useRouter();
 const route = useRoute();
 
 const getReport = () => {
-  const routeData = router.resolve({ name: "report-agent", params: { id: 1 } });
+  const routeData = router.resolve({ name: "report-environment", params: { id: 1 } });
   launchReportWindow(routeData.href);
 };
 
@@ -17,7 +17,7 @@ const initPrint = () => {
 </script>
 
 <template>
-  <div class="relative w-full h-full px-6">
+  <div class="w-full min-h-full px-6 pb-6">
     <header class="py-6 flex justify-between items-center font-bold">
       <div class="text-primary text-2xl flex items-center gap-2">
         <Icon icon="mdi:compass-outline" class="text-3xl" />
@@ -27,7 +27,7 @@ const initPrint = () => {
     </header>
     <button class="btn btn-primary" @click="getReport">Testing</button>
     <button
-      class="btn btn-primary px-4 flex gap-2 items-center shadow-[0_2px_10px] shadow-primary/30 absolute right-4 bottom-4 transition-all hover:shadow-[0_4px_16px] hover:shadow-primary/30 hover:-translate-y-0.5 active:translate-y-0"
+      class="btn btn-primary px-4 flex gap-2 items-center shadow-[0_2px_10px] shadow-primary/30 fixed right-4 bottom-4 transition-all hover:shadow-[0_4px_16px] hover:shadow-primary/30 hover:-translate-y-0.5 active:translate-y-0"
       @click="initPrint"
       id="printBtn"
     >
