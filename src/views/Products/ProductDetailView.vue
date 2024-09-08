@@ -52,7 +52,10 @@ const getCompetitorReport = async () => {
 };
 
 const generateReport = () => {
-  const routeData = router.resolve({ name: "report-product", params: { id: 7 } });
+  const routeData = router.resolve({
+    name: "report-product",
+    params: { id: product.value?.ID ?? 0 },
+  });
   launchReportWindow(routeData.href);
 };
 
