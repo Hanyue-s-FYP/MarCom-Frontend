@@ -8,6 +8,7 @@ import { type Ref, ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import ConfirmModal from "@/components/ConfirmModal.vue";
 import { useToasts } from "@/composable/toasts";
+import { launchReportWindow } from "@/utils";
 
 const route = useRoute();
 const router = useRouter();
@@ -26,6 +27,11 @@ const deleteAgent = async () => {
     makeToast(res.Message);
     router.push({ name: "agent-list" });
   }
+};
+
+const generateAgentReport = () => {
+  const routeData = router.resolve({ name: "report-agent", params: { id: agent.value?.ID ?? 0 } });
+  launchReportWindow(routeData.href);
 };
 
 onMounted(async () => {
@@ -50,7 +56,13 @@ onMounted(async () => {
         <Icon icon="mdi:arrow-left" class="text-[2rem]" />
         <span class="text-xl font-medium">{{ agent?.Name ?? "" }} Details</span>
       </div>
-      <div class="grid grid-cols-2 gap-2 items-center">
+      <div class="grid grid-cols-3 gap-2 items-center">
+        <button
+          class="btn shadow-common bg-neutral-400 text-white rounded-[10px] px-4 py-2"
+          @click="generateAgentReport"
+        >
+          Get Report
+        </button>
         <button
           class="btn-primary shadow-common rounded-[10px] px-4 py-2"
           @click="$router.push({ name: 'edit-agent', params: { id: $route.params.id } })"

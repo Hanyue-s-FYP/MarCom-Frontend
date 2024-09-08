@@ -41,7 +41,7 @@ onMounted(async () => {
 <template>
   <h1 class="text-4xl">{{ agent?.Name }}</h1>
   <p class="text-sm min-h-28 mb-2">{{ agent?.GeneralDescription }}</p>
-  <AgentAttributeDisplay :agent-attributes="agent?.Attributes ?? []" class="max-w-[70%]" />
+  <AgentAttributeDisplay :agent-attributes="agent?.Attributes ?? []" class="max-w-[70%] bg-white" />
   <h2 class="text-2xl mt-8 mb-2">Used in {{ agent?.InEnvironments.length || 0 }} Environments</h2>
   <ReportEnvironmentCard
     v-for="env in envDetails"
