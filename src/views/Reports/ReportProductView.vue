@@ -40,7 +40,7 @@ onMounted(async () => {
 <template>
   <h1 class="text-4xl">{{ product?.Name }}</h1>
   <p class="min-h-28 mb-2">{{ product?.Description }}</p>
-  <div class="shadow-common p-4 border border-neutral-400 rounded-[15px] bg-white">
+  <div class="shadow-common p-4 border border-neutral-400 rounded-[15px] bg-white max-w-[70%]">
     <div class="grid grid-cols-[2fr,8fr] gap-y-4 text-sm">
       <span class="font-bold">Cost</span>
       <span>{{ `RM ${product?.Cost}` }}</span>
