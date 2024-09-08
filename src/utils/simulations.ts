@@ -52,7 +52,7 @@ export const transformSimulationEventAPIToDetail = (
   } else if (typeStr === "SKIP") {
     return {
       ...ev,
-      ActualContent: `Skipped the cycle with the reason "${split[1]}"`,
+      ActualContent: `Skipped the cycle with the reason "${split[1] === "" ? split[0] : split[1]}"`,
     };
   }
 };
