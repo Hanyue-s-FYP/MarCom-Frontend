@@ -31,6 +31,7 @@ import { EventSource } from "extended-eventsource";
 import type { EnvironmentListData } from "@/types/Environments";
 import { ToastType } from "@/types/Toasts";
 import ConfirmModal from "@/components/ConfirmModal.vue";
+import { launchReportWindow } from "@/utils";
 
 type ComplexSimulationEvent = SimulationEventDetail & {
   CycleId: number;
@@ -299,6 +300,14 @@ const fetchSimulation = async () => {
   return { id, res };
 };
 
+const generateSimulationReport = () => {
+  const routeData = router.resolve({
+    name: "report-simulation",
+    params: { id: simulationDetail.value?.ID ?? 0 },
+  });
+  launchReportWindow(routeData.href);
+};
+
 onMounted(async () => {
   const { id, res } = await fetchSimulation();
 
@@ -319,7 +328,15 @@ onMounted(async () => {
         <Icon icon="mdi:arrow-left" class="text-[2rem]" />
         <span class="text-xl font-medium">{{ simulationDetail?.Name }} Details</span>
       </div>
-      <div class="grid grid-cols-2 gap-2 items-center">
+      <div class="grid grid-cols-3 gap-2 items-center">
+        <!-- only simulations that are not running can generate report as they wont be updating in real time, and no data race will happen -->
+        <button
+          class="btn shadow-common bg-neutral-400 text-white rounded-[10px] px-4 py-2"
+          @click="generateSimulationReport"
+          v-if="simulationDetail && !(SimulationStatus[simulationDetail.Status] === 'RUNNING')"
+        >
+          Get Report
+        </button>
         <button
           class="btn-primary shadow-common rounded-[10px] px-4 py-2"
           @click="$router.push({ name: 'edit-simulation', params: { id: $route.params.id } })"
