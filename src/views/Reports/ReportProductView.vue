@@ -43,9 +43,9 @@ onMounted(async () => {
   <div class="shadow-common p-4 border border-neutral-400 rounded-[15px] bg-white max-w-[70%]">
     <div class="grid grid-cols-[2fr,8fr] gap-y-4 text-sm">
       <span class="font-bold">Cost</span>
-      <span>{{ `RM ${product?.Cost}` }}</span>
+      <span>RM {{ product?.Cost?.toFixed(2) || "0.00" }}</span>
       <span class="font-bold">Sells At</span>
-      <span>{{ `RM ${product?.Price}` }}</span>
+      <span>RM {{ product?.Price?.toFixed(2) || "0.00" }}</span>
     </div>
   </div>
   <h2 class="text-2xl mt-8 mb-2">Used in {{ product?.InEnvironments.length || 0 }} Environments</h2>
