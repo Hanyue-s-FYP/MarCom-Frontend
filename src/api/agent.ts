@@ -1,10 +1,17 @@
-import type { AgentWithSimulation, CreateAgent, EditAgent, GetAgent } from "@/types/Agents";
+import type {
+  AgentWithSimplifiedEnvironment,
+  CreateAgent,
+  EditAgent,
+  GetAgent,
+} from "@/types/Agents";
 import { callApi } from "@/utils";
 import type { GeneralResponse } from ".";
 
-export const getAgentTableByBusinessID = async (id: number): Promise<AgentWithSimulation[]> => {
+export const getAgentTableByBusinessID = async (
+  id: number,
+): Promise<AgentWithSimplifiedEnvironment[]> => {
   const res = await getAgents(id);
-  const result: AgentWithSimulation[] = [];
+  const result: AgentWithSimplifiedEnvironment[] = [];
 
   if (res) {
     for (const el of res) {
@@ -38,7 +45,7 @@ export const getAgent = async (id: number): Promise<GetAgent> => {
 
 export const getAgentWithSimplifiedEnv = async (
   id: number,
-): Promise<AgentWithSimulation | undefined> => {
+): Promise<AgentWithSimplifiedEnvironment | undefined> => {
   const agent = await getAgent(id);
   if (agent) {
     const inEnvs = await callApi(`environments/has-agent/${agent?.ID ?? 0}`, {

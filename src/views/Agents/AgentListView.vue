@@ -2,7 +2,7 @@
 import { onMounted, ref, type Ref } from "vue";
 import { AgGridVue } from "ag-grid-vue3";
 import DataTableActionColumn from "@/components/DataTableActionColumn.vue";
-import type { AgentWithSimulation } from "@/types/Agents";
+import type { AgentWithSimplifiedEnvironment } from "@/types/Agents";
 import { getAgentTableByBusinessID } from "@/api/agent";
 import { useAuthStore } from "@/stores/auth";
 import { deleteAgent as deleteAgentAPI } from "@/api/agent";
@@ -43,7 +43,7 @@ const columns = [
   },
 ];
 
-const items: Ref<AgentWithSimulation[]> = ref([]);
+const items: Ref<AgentWithSimplifiedEnvironment[]> = ref([]);
 
 const fetchAgents = async () => {
   const res = await getAgentTableByBusinessID(auth.userData?.RoleID ?? 0);

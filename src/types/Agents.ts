@@ -11,7 +11,7 @@ export type EditAgent = CreateAgent & { ID: number };
 
 export type GetAgent = EditAgent;
 
-export type AgentWithSimulation = GetAgent & {
+export type AgentWithSimplifiedEnvironment = GetAgent & {
   InEnvironments: SimplifiedEnvironment[];
 };
 

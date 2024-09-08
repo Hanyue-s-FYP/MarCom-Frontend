@@ -2,7 +2,7 @@
 import { deleteAgent as deleteAgentAPI, getAgentWithSimplifiedEnv } from "@/api/agent";
 import AgentAttributeDisplay from "@/components/agent/AgentAttributeDisplay.vue";
 import EnvironmentCardSimple from "@/components/EnvironmentCardSimple.vue";
-import type { AgentWithSimulation as AgentWithSimplifiedEnvironment } from "@/types/Agents";
+import type { AgentWithSimplifiedEnvironment } from "@/types/Agents";
 import { Icon } from "@iconify/vue";
 import { type Ref, ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
