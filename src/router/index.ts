@@ -177,7 +177,7 @@ const router = createRouter({
         {
           path: "product/:id",
           name: "report-product",
-          component: () => import("@/views/Products/ProductNewView.vue"),
+          component: () => import("@/views/Reports/ReportProductView.vue"),
           meta: {
             reportName: "Product Report",
           },
@@ -185,7 +185,7 @@ const router = createRouter({
         {
           path: "agent/:id",
           name: "report-agent",
-          component: () => import("@/views/Products/ProductEditView.vue"),
+          component: () => import("@/views/Reports/ReportAgentView.vue"),
           meta: {
             reportName: "Agent Report",
           },
@@ -193,7 +193,7 @@ const router = createRouter({
         {
           path: "environment/:id",
           name: "report-environment",
-          component: () => import("@/views/Products/ProductDetailView.vue"),
+          component: () => import("@/views/Reports/ReportEnvironmentView.vue"),
           meta: {
             reportName: "Environment Report",
           },
@@ -201,7 +201,7 @@ const router = createRouter({
         {
           path: "simulation/:id",
           name: "report-simulation",
-          component: () => import("@/views/Products/ProductDetailView.vue"),
+          component: () => import("@/views/Reports/ReportSimulationView.vue"),
           meta: {
             reportName: "Simulation Report",
           },
