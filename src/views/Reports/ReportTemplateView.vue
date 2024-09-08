@@ -7,7 +7,7 @@ const router = useRouter();
 const route = useRoute();
 
 const getReport = () => {
-  const routeData = router.resolve({ name: "report-product", params: { id: 7 } });
+  const routeData = router.resolve({ name: "report-agent", params: { id: 1 } });
   launchReportWindow(routeData.href);
 };
 
