@@ -168,11 +168,8 @@ const router = createRouter({
     {
       path: "/report",
       name: "report",
+      redirect: { name: "dashboard-data" }, // should not access this route in raw, send'em back
       component: () => import("@/views/Reports/ReportTemplateView.vue"),
-      meta: {
-        notRequireAuth: true, // instead of adding requireAuth to every route that needs it (which will be majority of the routes), add to those who don't need it first (because will be way less)
-        noAccessWhenLoggedIn: true,
-      },
       children: [
         {
           path: "product/:id",
