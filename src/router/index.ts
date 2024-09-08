@@ -165,6 +165,49 @@ const router = createRouter({
         noAccessWhenLoggedIn: true,
       },
     },
+    {
+      path: "/report",
+      name: "report",
+      component: () => import("@/views/Reports/ReportTemplateView.vue"),
+      meta: {
+        notRequireAuth: true, // instead of adding requireAuth to every route that needs it (which will be majority of the routes), add to those who don't need it first (because will be way less)
+        noAccessWhenLoggedIn: true,
+      },
+      children: [
+        {
+          path: "product/:id",
+          name: "report-product",
+          component: () => import("@/views/Products/ProductNewView.vue"),
+          meta: {
+            reportName: "Product Report",
+          },
+        },
+        {
+          path: "agent/:id",
+          name: "report-agent",
+          component: () => import("@/views/Products/ProductEditView.vue"),
+          meta: {
+            reportName: "Agent Report",
+          },
+        },
+        {
+          path: "environment/:id",
+          name: "report-environment",
+          component: () => import("@/views/Products/ProductDetailView.vue"),
+          meta: {
+            reportName: "Environment Report",
+          },
+        },
+        {
+          path: "simulation/:id",
+          name: "report-simulation",
+          component: () => import("@/views/Products/ProductDetailView.vue"),
+          meta: {
+            reportName: "Simulation Report",
+          },
+        },
+      ],
+    },
     // catch all route, for those invalid routes
     { path: "/:pathMatch(.*)*", name: "NotFound", redirect: { name: "dashboard-data" } },
   ],

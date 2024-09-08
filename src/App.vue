@@ -33,54 +33,66 @@ const shouldShowNav = () => {
     route.name === "reset-password"
   );
 };
+
+// hide header and nav if is report
+const isReport = () => {
+  const route = useRoute();
+  return route.path.includes("report");
+};
 </script>
 
 <template>
-  <!-- hide nav if is at login or register page -->
-  <div
-    class="bg-white shadow-common pt-6 min-w-52 rounded-[20px] flex flex-col justify-between"
-    v-if="shouldShowNav()"
-  >
-    <nav>
-      <div class="flex justify-end px-4">
-        <Icon icon="mdi:arrow-collapse-left" class="text-neutral-400 text-2xl" />
-      </div>
-      <RouterLink to="/" class="nav-link">
-        <Icon icon="mdi:home" />
-        Dashboard
-      </RouterLink>
-      <RouterLink to="/products" class="nav-link">
-        <Icon icon="mdi:tag" />
-        Products
-      </RouterLink>
-      <RouterLink to="/agents" class="nav-link">
-        <Icon icon="eos-icons:ai-healing" />
-        Agents
-      </RouterLink>
-      <RouterLink to="/environments" class="nav-link">
-        <Icon icon="ri:building-fill" />
-        Environments
-      </RouterLink>
-      <RouterLink to="/simulations" class="nav-link">
-        <Icon icon="solar:graph-bold" />
-        Simulations
-      </RouterLink>
-    </nav>
-    <button class="btn-primary justify-self-end m-4" @click="logoutConfirm">Log Out</button>
-  </div>
-  <div class="w-full flex flex-col gap-4 h-full max-h-full overflow-auto">
-    <header
-      class="text-primary bg-white shadow-common rounded-[15px] px-6 py-4 text-2xl font-bold flex items-center gap-2"
+  <div class="w-full h-full flex gap-4" :class="{ 'p-4': !isReport() }">
+    <!-- hide nav if is at login or register page -->
+    <div
+      class="bg-white shadow-common pt-6 min-w-52 rounded-[20px] flex flex-col justify-between"
+      v-if="shouldShowNav() && !isReport()"
     >
-      <Icon icon="mdi:compass-outline" class="text-3xl" />
-      <h1>MarCom</h1>
-    </header>
-    <main class="h-full">
-      <RouterView />
-    </main>
+      <nav>
+        <div class="flex justify-end px-4">
+          <Icon icon="mdi:arrow-collapse-left" class="text-neutral-400 text-2xl" />
+        </div>
+        <RouterLink to="/" class="nav-link">
+          <Icon icon="mdi:home" />
+          Dashboard
+        </RouterLink>
+        <RouterLink to="/products" class="nav-link">
+          <Icon icon="mdi:tag" />
+          Products
+        </RouterLink>
+        <RouterLink to="/agents" class="nav-link">
+          <Icon icon="eos-icons:ai-healing" />
+          Agents
+        </RouterLink>
+        <RouterLink to="/environments" class="nav-link">
+          <Icon icon="ri:building-fill" />
+          Environments
+        </RouterLink>
+        <RouterLink to="/simulations" class="nav-link">
+          <Icon icon="solar:graph-bold" />
+          Simulations
+        </RouterLink>
+      </nav>
+      <button class="btn-primary justify-self-end m-4" @click="logoutConfirm">Log Out</button>
+    </div>
+    <div class="w-full flex flex-col gap-4 h-full max-h-full overflow-auto">
+      <header
+        class="text-primary bg-white shadow-common rounded-[15px] px-6 py-4 text-2xl font-bold flex items-center gap-2"
+        v-if="!isReport()"
+      >
+        <Icon icon="mdi:compass-outline" class="text-3xl" />
+        <h1>MarCom</h1>
+      </header>
+      <main class="h-full">
+        <RouterView />
+      </main>
+    </div>
+    <ConfirmModal
+      ref="confirmModal"
+      content="Are your sure you want to log out?"
+      @confirm="logout"
+    />
   </div>
-
-  <ConfirmModal ref="confirmModal" content="Are your sure you want to log out?" @confirm="logout" />
   <Teleport to="body">
     <ToastContainer :toasts="toasts" :remove-toast="removeToast" />
     <div class="loader" v-if="isLoading">
@@ -114,7 +126,7 @@ body {
 }
 
 #app {
-  @apply h-full py-4 px-4 flex gap-4 relative;
+  @apply h-full relative;
 }
 
 .nav-link {

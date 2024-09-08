@@ -128,3 +128,7 @@ export const isInt = (val: string): boolean => {
 export const extractInt = (val: string): number => {
   return !isInt(val) ? 0.0 : parseInt(val);
 };
+
+export const launchReportWindow = (href: string) => {
+  window.open(href, "_blank", "height=734,width=520"); // a4 aspect ratio lai
+};
