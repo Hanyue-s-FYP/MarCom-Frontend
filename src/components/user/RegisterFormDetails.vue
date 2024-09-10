@@ -91,10 +91,10 @@ defineExpose({
       :error-msg="errorMsgs.contactNumberErr"
     />
     <div class="flex flex-col w-full" :class="{ 'text-red-500': errorMsgs.businessTypeErr }">
-      <label for="environment" class="font-bold">Environment</label>
+      <label for="businessType" class="font-bold">Business Type</label>
       <select
-        name="environment"
-        id="environment"
+        name="businessType"
+        id="businessType"
         class="border border-neutral-400 rounded-[12px] py-2 px-3 relative focus:border-primary focus:text-primary"
         :class="{ 'border-red-500': errorMsgs.businessTypeErr }"
         v-model="model!!.BusinessType"
