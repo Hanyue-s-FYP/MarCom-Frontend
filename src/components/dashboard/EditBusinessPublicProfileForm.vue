@@ -4,6 +4,7 @@ import ImageFileUpload from "@/components/ImageFileUpload.vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import { updateBusiness, type UpdateBusinessData } from "@/api/user";
+import { ref } from "vue";
 
 const router = useRouter();
 const auth = useAuthStore();
@@ -19,6 +20,8 @@ const emits = defineEmits<{
   (e: "updateSuccess"): void;
 }>();
 
+const descriptionErr = ref("");
+
 const saveBusinessPublicProfile = async () => {
   let updateData: UpdateBusinessData = {
     ID: auth.userData?.RoleID ?? 0, // not possible get 0
@@ -27,6 +30,11 @@ const saveBusinessPublicProfile = async () => {
   };
   if (coverPic.value instanceof File) {
     updateData = { ...updateData, NewCoverImg: coverPic.value };
+  }
+  if (updateData.Description.trim() === "") {
+    descriptionErr.value = "Description is required";
+  } else {
+    descriptionErr.value = "";
   }
   console.log(updateData);
   const res = await updateBusiness(updateData);
@@ -44,7 +52,13 @@ const saveBusinessPublicProfile = async () => {
     <ImageFileUpload v-model:pic="coverPic" />
     <InputGeneric name="Company Name" type="text" v-model="companyName" disabled />
     <InputGeneric name="Business Type" type="text" v-model="businessType" disabled />
-    <InputGeneric name="Description" type="textarea" :rows="11" v-model="description" />
+    <InputGeneric
+      name="Description"
+      type="textarea"
+      :rows="11"
+      v-model="description"
+      :error-msg="descriptionErr"
+    />
     <div class="flex gap-4 w-full">
       <button class="btn-primary w-full" @click="saveBusinessPublicProfile()">Save</button>
       <button
