@@ -240,6 +240,7 @@ const makeListenerForUpdate = (id: number) => {
         }
       }
       cycleEarningSeries.value = updateCycleEarningSeries();
+      simulationProductSeries.value = updateSimulationProductSeries();
     }
   });
   simulationUpdateEventSource.addEventListener("simulation-stopped", async (event) => {
@@ -328,7 +329,14 @@ onMounted(async () => {
         <Icon icon="mdi:arrow-left" class="text-[2rem]" />
         <span class="text-xl font-medium">{{ simulationDetail?.Name }} Details</span>
       </div>
-      <div class="grid grid-cols-3 gap-2 items-center">
+      <div
+        class="grid gap-2 items-center"
+        :class="[
+          simulationDetail && !(SimulationStatus[simulationDetail.Status] === 'RUNNING')
+            ? 'grid-cols-3'
+            : 'grid-cols-2',
+        ]"
+      >
         <!-- only simulations that are not running can generate report as they wont be updating in real time, and no data race will happen -->
         <button
           class="btn shadow-common bg-neutral-400 text-white rounded-[10px] px-4 py-2"
