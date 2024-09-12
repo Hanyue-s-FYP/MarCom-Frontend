@@ -39,7 +39,7 @@ onMounted(async () => {
         @click="$router.push({ name: 'simulation-list' })"
       >
         <Icon icon="mdi:arrow-left" class="text-[2rem]" />
-        <span class="text-xl font-medium">New Simulation</span>
+        <span class="text-xl font-medium">Editing Simulation {{ simulationData?.Name }}</span>
       </div>
     </div>
     <div class="max-w-lg pl-2">
